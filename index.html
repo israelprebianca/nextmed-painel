@@ -472,7 +472,7 @@ function desenhar() {
           ${m.alerta ? `<div class="alerta-linha">⚠️ ${esc(m.alerta)}<button data-a="alertaok" data-id="${m.id}">Resolvido</button></div>` : ""}</td>
       <td>${esc(m.crm)}-${esc(m.uf)}</td>
       <td><a href="https://wa.me/55${zap}" target="_blank" rel="noopener">${esc(fone(m.celular))}</a><div class="sub">${esc(m.email)}</div></td>
-      <td><span class="badge ${s.cls}">${s.txt}</span>${m.limites ? `<div style="margin-top:3px"><span class="badge b-lim" title="${esc(resumoLim(aplicarLim(limGlobal(), m.limites)))}">Limites próprios</span></div>` : ""}${m.mp_assinatura_status ? `<div class="sub">MP: ${esc(m.mp_assinatura_status)}${m.valor_assinatura ? " · " + Number(m.valor_assinatura).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) + "/mês" : ""}</div>` : ""}</td>
+      <td><span class="badge ${s.cls}">${s.txt}</span>${m.limites ? `<div style="margin-top:3px"><span class="badge b-lim" title="${esc(resumoLim(aplicarLim(limGlobal(), m.limites)))}">Limites próprios</span></div>` : ""}${m.tempo_minimo ? `<div style="margin-top:3px"><span class="badge b-lim" title="Tempo mínimo próprio deste médico">⏱ ${rotTempo(m.tempo_minimo)}</span></div>` : ""}${m.mp_assinatura_status ? `<div class="sub">MP: ${esc(m.mp_assinatura_status)}${m.valor_assinatura ? " · " + Number(m.valor_assinatura).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) + "/mês" : ""}</div>` : ""}</td>
       <td>${s.cortesia ? (s.vence ? fmtData(s.vence) : "sem prazo") : fmtData(s.vence)}<div class="sub">${s.cortesia ? "cortesia" : m.pago_ate ? "assinatura" : "fim do teste"}</div></td>
       <td>${up ? `${fmtData(up.pago_em)}<div class="sub">${Number(up.valor).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</div>` : "—"}</td>
       <td>${fmtDH(m.ultimo_uso)}<div class="sub">${m.versao_extensao ? "v" + esc(m.versao_extensao) : ""}</div></td>
@@ -519,12 +519,24 @@ async function acao(a, id) {
       salvar(id, { bloqueio_manual: false, bloqueado_em: null, bloqueio_motivo: null });
   } else if (a === "lim") {
     const L = aplicarLim(limGlobal(), m.limites);
+    const tg = TEMPO_GERAL, tp = m.tempo_minimo;
     if (!(await dialogo(`Limites de ${m.nome}`, `
+      <div class="bloco" style="margin-bottom:12px"><b>Tempo mínimo para o atendimento valer</b>
+        <label class="op"><input type="radio" name="tm" value="geral" ${tp ? "" : "checked"}> Usar o geral (${rotTempo(tg)})</label>
+        <label class="op"><input type="radio" name="tm" value="proprio" ${tp ? "checked" : ""}> Próprio deste médico:
+          <input id="mtMin" type="number" min="0" max="60" value="${Math.floor((tp || tg) / 60)}" style="width:60px;display:inline-block"> min
+          <input id="mtSeg" type="number" min="0" max="59" step="5" value="${(tp || tg) % 60}" style="width:60px;display:inline-block"> s</label>
+        <p class="sub" style="margin:4px 0 0">Entre 30 s e 60 min. Atendimentos já gravados mantêm a regra da época.</p></div>
       <label class="op"><input type="radio" name="lm" value="padrao" ${m.limites ? "" : "checked"}> Usar o padrão de todos (aba Configurações)</label>
       <label class="op"><input type="radio" name="lm" value="proprio" ${m.limites ? "checked" : ""}> Limites próprios para este médico:</label>
       <div id="limProprio" style="margin-top:8px">${formLimites(L, "m_")}</div>`, "Salvar", true))) return;
     const proprio = document.querySelector('input[name="lm"]:checked').value === "proprio";
-    salvar(id, { limites: proprio ? lerLimites("m_") : null });
+    let tempo = null;
+    if (document.querySelector('input[name="tm"]:checked').value === "proprio") {
+      tempo = Math.round((+$("mtMin").value || 0) * 60 + (+$("mtSeg").value || 0));
+      if (tempo < 30 || tempo > 3600) return alert("Tempo mínimo: use entre 30 s e 60 min.");
+    }
+    salvar(id, { limites: proprio ? lerLimites("m_") : null, tempo_minimo: tempo });
   } else if (a === "obs") {
     if (!(await dialogo("Observação", `<p>${esc(m.nome)}</p><label>Observação (a equipe vê)</label><textarea id="oTxt" rows="3">${esc(m.observacoes || "")}</textarea>`))) return;
     salvar(id, { observacoes: $("oTxt").value.trim() || null });
@@ -638,10 +650,12 @@ const resumoLim = (L) => [!L.auto_permitido ? "sem automático" : !L.fila_vazia_
   L.auto_permitido ? `fila ${L.consulta_fila.min}–${L.consulta_fila.max}s` : null].filter(Boolean).join(" · ");
 
 let PRECO = 200;
+let TEMPO_GERAL = 180;   // tempo mínimo geral (Configurações), usado como referência nos limites de cada médico
+const rotTempo = t => Math.floor(t / 60) + (t % 60 ? ":" + String(t % 60).padStart(2, "0") : "") + " min";
 async function carregarCfg() {
   const { data } = await sb.from("config").select("limites, preco_mensal, texto_assinar, ocultar_assinar, cadastros_abertos, mensagem_cadastro, manutencao, mensagem_manutencao, seletores, versao_minima, tempo_minimo").eq("id", 1).maybeSingle();
   $("verMin").value = data?.versao_minima ?? "0.0.0";
-  { const t = data?.tempo_minimo ?? 180; $("tmMin").value = Math.floor(t / 60); $("tmSeg").value = t % 60; }
+  { const t = data?.tempo_minimo ?? 180; TEMPO_GERAL = t; $("tmMin").value = Math.floor(t / 60); $("tmSeg").value = t % 60; }
   $("selJson").value = JSON.stringify(data?.seletores ?? {}, null, 2);
   const mm = data?.manutencao || "normal"; document.querySelectorAll('input[name="man"]').forEach(r => r.checked = r.value === mm);
   $("manMsg").value = data?.mensagem_manutencao ?? ""; faixaMan(mm);
@@ -688,6 +702,7 @@ $("tmSalvar").onclick = async () => {
   const rot = Math.floor(t / 60) + (t % 60 ? ":" + String(t % 60).padStart(2, "0") : "") + " min";
   if (!confirm(`Mudar o tempo mínimo para ${rot} para TODOS os médicos?`)) return;
   const { error } = await sb.from("config").update({ tempo_minimo: t, atualizado_em: new Date().toISOString() }).eq("id", 1);
+  if (!error) TEMPO_GERAL = t;
   okMsg("tmOk", error ? "Erro: " + error.message : `Salvo: atendimentos valem a partir de ${rot}. As extensões atualizam em até 5 min.`);
 };
 $("verSalvar").onclick = async () => {
