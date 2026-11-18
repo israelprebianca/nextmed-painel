@@ -608,12 +608,12 @@ function formLimites(L, px) {
       <p class="sub">Captação no ritmo máximo. Só funciona com o modo automático liberado.</p>
       ${um("fila_vazia_consulta", "Consultar a fila a cada (s)")}${um("fila_vazia_espera", "Chamar próximo após (s)")}</div>
     <div class="bloco">${ch("recarregar_permitido", "Recarregar a página como reserva")}
-      <p class="sub">Usado só se a consulta direta da fila não funcionar.</p>
+      <p class="sub">Recarrega a página uma vez quando há paciente e o botão ainda está desativado: depois de um clique antecipado que não abriu, ou no lugar dele se o "Clique antecipado" estiver desligado. Máx. 1 vez a cada 10 s. Também usado se a consulta direta da fila não funcionar.</p>
       <div class="lim-linha cab"><span></span><span>mínimo</span><span>máximo</span><span>padrão</span></div>
       ${fxl("recarregar", "Recarregar a cada")}</div>
     <div class="bloco">${ch("voz_permitida", "Aviso por voz liberado")}<p class="sub">"Paciente captado" e "Vídeo aberto".</p></div>
     <div class="bloco">${ch("clique_forcado_permitido", "Clique antecipado")}
-      <p class="sub">Clica assim que a extensão vê paciente na fila, sem esperar a tela da plataforma liberar o botão. Até 5 tentativas por paciente. Desligue se a plataforma reclamar.</p></div>
+      <p class="sub">Clica assim que a extensão vê paciente na fila, sem esperar a tela da plataforma liberar o botão. Até 5 tentativas por paciente. Só o administrador controla (o médico não vê esta opção). Desligado: a extensão usa só a recarga da página.</p></div>
     <div class="bloco">${ch("segundo_plano_permitido", "Captar com a aba escondida")}
       <p class="sub">Com a aba em segundo plano ou minimizada, consulta a fila no mesmo ritmo e traz a aba para a frente quando aparece paciente.</p></div>
     <div class="bloco">${ch("voltar_fila_permitido", "Voltar sozinho para a fila")}
