@@ -1,0 +1,1020 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Painel de assinantes — NextMed</title>
+<style>
+  :root{--bg:#f4f6f9;--card:#fff;--tx:#0f172a;--mut:#64748b;--ln:#e2e8f0;--pri:#1d4ed8;
+    --ok:#15803d;--okb:#dcfce7;--tst:#1d4ed8;--tstb:#dbeafe;--am:#a16207;--amb:#fef3c7;--rd:#b91c1c;--rdb:#fee2e2;--cor:#7e22ce;--corb:#f3e8ff;--gr:#475569;--grb:#e2e8f0}
+  *{box-sizing:border-box}
+  body{margin:0;font:14px/1.4 system-ui,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--tx)}
+  header{background:#0f172a;color:#fff;padding:12px 20px;display:flex;align-items:center;gap:12px}
+  header h1{font-size:16px;margin:0;font-weight:650}
+  header .sp{flex:1}
+  header button{background:transparent;color:#cbd5e1;border:1px solid #334155;border-radius:6px;padding:5px 10px;cursor:pointer}
+  main{max-width:1280px;margin:0 auto;padding:18px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+  .kpi{background:var(--card);border:1px solid var(--ln);border-radius:10px;padding:10px 12px;cursor:pointer}
+  .kpi.sel{outline:2px solid var(--pri)}
+  .kpi b{display:block;font-size:24px;font-variant-numeric:tabular-nums}
+  .kpi span{color:var(--mut);font-size:12px}
+  .barra{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  .barra input{flex:1;min-width:220px;padding:8px 10px;border:1px solid var(--ln);border-radius:8px;font-size:14px}
+  .btn{padding:8px 12px;border-radius:8px;border:1px solid var(--ln);background:#fff;cursor:pointer;font-size:13px}
+  .btn.pri{background:var(--pri);border-color:var(--pri);color:#fff}
+  .tab{background:var(--card);border:1px solid var(--ln);border-radius:10px;overflow:auto}
+  table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+  th{position:sticky;top:0;background:#f8fafc;text-align:left;font-size:12px;color:var(--mut);font-weight:600;padding:9px 10px;border-bottom:1px solid var(--ln);white-space:nowrap}
+  td{padding:9px 10px;border-bottom:1px solid var(--ln);vertical-align:top}
+  tr:hover td{background:#f8fafc}
+  .nome{font-weight:600}
+  td:nth-child(2),td:nth-child(3) a{white-space:nowrap}
+  .sub{color:var(--mut);font-size:12px}
+  .badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+  .b-ativo{background:var(--okb);color:var(--ok)} .b-teste{background:var(--tstb);color:var(--tst)}
+  .b-vence{background:var(--amb);color:var(--am)} .b-tol{background:var(--rdb);color:var(--rd)}
+  .b-bloq{background:var(--rd);color:#fff} .b-man{background:var(--gr);color:#fff} .b-cor{background:var(--corb);color:var(--cor)}
+  .acoes .cort{color:var(--cor);border-color:#e9d5ff}
+  .alerta-linha{background:var(--rdb);color:var(--rd);font-size:12px;padding:4px 6px;border-radius:6px;margin-top:4px}
+  .alerta-linha button{margin-left:6px;font-size:11px;border:1px solid #fca5a5;background:#fff;color:var(--rd);border-radius:5px;cursor:pointer}
+  .aviso-mp{background:var(--amb);color:var(--am);padding:8px;border-radius:8px;font-size:12px;margin-top:10px}
+  .op{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:14px;color:var(--tx)}
+  .op input[type=radio]{width:auto}
+  .acoes{display:flex;gap:4px;flex-wrap:wrap}
+  .acoes button{font-size:12px;padding:4px 8px;border-radius:6px;border:1px solid var(--ln);background:#fff;cursor:pointer;white-space:nowrap}
+  .acoes .perigo{color:var(--rd);border-color:#fecaca}
+  .alerta{color:var(--am);cursor:help}
+  a{color:var(--pri);text-decoration:none}
+  .vazio{padding:30px;text-align:center;color:var(--mut)}
+  #login,.caixa-login{max-width:360px;margin:10vh auto;background:#fff;border:1px solid var(--ln);border-radius:12px;padding:24px}
+  #login h2,.caixa-login h2{margin:0 0 4px;font-size:18px}
+  #login input,.caixa-login input{width:100%;box-sizing:border-box;padding:9px 10px;border:1px solid var(--ln);border-radius:8px;margin:6px 0;font-size:14px}
+  #login button,#fMfa button{width:100%;margin-top:8px}
+  .papel{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11px;font-weight:600;background:#e0e7ff;color:#3730a3}
+  .papel.ajudante{background:#fef3c7;color:#92400e}
+  .inativo{opacity:.5}
+  .hist-filtros{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  .hist-filtros input,.hist-filtros select{padding:7px 9px;border:1px solid var(--ln);border-radius:8px;font:inherit}
+  td.det{font-size:12px;color:#334155;max-width:420px}
+  .erro{color:var(--rd);font-size:13px;min-height:18px}
+  dialog{border:1px solid var(--ln);border-radius:12px;padding:18px;max-width:420px;width:92%}
+  dialog h3{margin:0 0 10px;font-size:16px}
+  dialog label{display:block;font-size:12px;color:var(--mut);margin-top:8px}
+  dialog input,dialog textarea{width:100%;padding:8px;border:1px solid var(--ln);border-radius:8px;font:inherit}
+  dialog .fim{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+  nav.abas{display:flex;gap:4px;margin-left:18px}
+  nav.abas button{background:transparent;border:0;color:#94a3b8;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:14px}
+  nav.abas button.sel{background:#1e293b;color:#fff}
+  .cfg-grade{display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:12px;max-width:1000px}
+  .bloco{background:#fff;border:1px solid var(--ln);border-radius:10px;padding:14px}
+  .bloco h4{margin:0 0 4px;font-size:14px}
+  .bloco p.sub{margin:0 0 10px}
+  .lim-linha{display:grid;grid-template-columns:1fr 70px 70px 70px;gap:6px;align-items:center;margin-top:6px;font-size:13px}
+  .lim-linha.cab{color:var(--mut);font-size:11px;margin-top:0}
+  .lim-linha input{width:100%;padding:5px 6px;border:1px solid var(--ln);border-radius:6px;font:inherit}
+  .lim-um{display:grid;grid-template-columns:1fr 70px;gap:6px;align-items:center;margin-top:6px;font-size:13px}
+  .lim-um input{padding:5px 6px;border:1px solid var(--ln);border-radius:6px;font:inherit}
+  .chave{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;margin-bottom:6px}
+  .chave input{width:auto}
+  .ok-msg{color:var(--ok);font-size:13px;margin-left:10px}
+  .b-lim{background:#e0f2fe;color:#0369a1}
+  dialog.largo{max-width:720px}
+  .faixa-man{background:var(--rd);color:#fff;padding:8px 20px;font-weight:600;font-size:13px;text-align:center}
+  .faixa-man.timer{background:#b45309}
+  .saude{background:#fff;border:1px solid var(--ln);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:13px}
+  .saude.ok{border-color:#bbf7d0;background:#f0fdf4;color:#166534}
+  .saude.alerta{border-color:#fca5a5;background:#fef2f2;color:#991b1b}
+  .saude.atencao{border-color:#fcd34d;background:#fffbeb;color:#92400e}
+  .saude b.t{display:block;font-size:14px;margin-bottom:4px}
+  .saude ul{margin:4px 0 0 18px;padding:0}
+  .saude .dica{margin-top:6px;font-size:12px}
+  textarea.json{width:100%;min-height:220px;font:12px ui-monospace,Consolas,monospace;padding:8px;border:1px solid var(--ln);border-radius:8px;box-sizing:border-box}
+  details summary{cursor:pointer;color:var(--pri);font-size:13px;margin-top:6px}
+  nav.abas .qt{background:#dc2626;color:#fff;border-radius:999px;padding:0 6px;font-size:11px;margin-left:4px}
+  .lem{background:#fff;border:1px solid var(--ln);border-radius:10px;padding:10px 12px;display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:center;margin-bottom:8px}
+  .lem .ic{font-size:20px;text-align:center}
+  .lem .tt{font-weight:600}
+  .lem .msgz{color:var(--mut);font-size:12px;margin-top:2px}
+  .lem .ac{display:flex;gap:6px}
+  .lem .ac a,.lem .ac button{font-size:12px;padding:5px 10px;border-radius:6px;border:1px solid var(--ln);background:#fff;cursor:pointer;color:var(--tx);text-decoration:none;white-space:nowrap}
+  .lem .ac a.zap{background:#16a34a;border-color:#16a34a;color:#fff}
+  .grupo-t{font-size:13px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.04em;margin:16px 0 8px}
+  .num-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:16px}
+  .num-kpis div{background:#fff;border:1px solid var(--ln);border-radius:10px;padding:12px}
+  .num-kpis b{display:block;font-size:24px;font-variant-numeric:tabular-nums}
+  .num-kpis span{color:var(--mut);font-size:12px}
+  .num-kpis small{display:block;color:var(--mut);font-size:11px;margin-top:2px}
+  .graf{background:#fff;border:1px solid var(--ln);border-radius:10px;padding:14px 16px;margin-bottom:16px}
+  .graf h3{margin:0 0 10px;font-size:14px}
+  .barras{display:flex;align-items:flex-end;gap:14px;height:170px;padding-top:18px;border-bottom:1px solid var(--ln)}
+  .barras .c{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+  .barras .v{font-size:11px;color:var(--tx);margin-bottom:4px;white-space:nowrap}
+  .barras .b{width:100%;max-width:56px;background:#1d4ed8;border-radius:5px 5px 0 0;min-height:2px}
+  .barras .c.atual .b{background:#93c5fd}
+  .rot{display:flex;gap:14px}.rot span{flex:1;text-align:center;font-size:12px;color:var(--mut);padding-top:5px}
+  .rodape{color:var(--mut);font-size:12px;margin-top:8px}
+
+  /* celular */
+  @media (max-width:760px){
+    header{flex-wrap:wrap;padding:10px 12px;gap:8px}
+    header .sp{display:none}
+    nav.abas{order:3;width:100%;display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+    nav.abas::-webkit-scrollbar{display:none}
+    nav.abas button{flex:0 0 auto;white-space:nowrap}
+    main{padding:10px}
+    .kpis{grid-template-columns:repeat(2,1fr)}
+    .barra input{min-width:0;width:100%}
+    td,th{padding:8px}
+    dialog,.modal>div,.modal .caixa{max-width:96vw!important;width:96vw!important}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ CONFIGURAÇÃO: preencha com os dados do seu projeto Supabase (Settings → API) ============ -->
+<script>
+  window.CONFIG = {
+    SUPABASE_URL: "https://ewssmlwmarlilefexqzh.supabase.co",
+    SUPABASE_ANON_KEY: "sb_publishable_U4zQawXY6mtU3SJLNKM-lg_W8eqnJ-N"
+  };
+</script>
+<!-- ===================================================================================================== -->
+
+<div id="login" hidden>
+  <h2>Painel de assinantes</h2>
+  <div class="sub">Entre com seu e-mail da equipe</div>
+  <form id="fLogin">
+    <input id="lEmail" type="email" placeholder="E-mail" autocomplete="username" required>
+    <input id="lSenha" type="password" placeholder="Senha" autocomplete="current-password" required>
+    <div class="erro" id="lErro"></div>
+    <button class="btn pri" type="submit">Entrar</button>
+  </form>
+</div>
+
+<div id="mfa" class="caixa-login" hidden>
+  <h2 id="mfaTit">Verificação em 2 etapas</h2>
+  <div id="mfaCadastro" hidden>
+    <p class="sub">Primeiro acesso: proteja sua conta com o celular.</p>
+    <ol class="sub" style="padding-left:18px;line-height:1.6">
+      <li>Instale um app autenticador no celular (Google Authenticator ou Microsoft Authenticator — grátis).</li>
+      <li>No app, toque em <b>+</b> e <b>escaneie o QR code</b> abaixo.</li>
+      <li>Digite o código de 6 dígitos que aparecer no app.</li>
+    </ol>
+    <div style="text-align:center"><img id="mfaQr" alt="QR code" style="width:190px;height:190px;border:1px solid var(--ln);border-radius:8px;background:#fff"></div>
+    <p class="sub" style="text-align:center;margin:6px 0 0">Sem câmera? Digite no app a chave: <code id="mfaSecret" style="user-select:all"></code></p>
+  </div>
+  <p class="sub" id="mfaTxt" hidden>Abra o app autenticador no celular e digite o código de 6 dígitos.</p>
+  <form id="fMfa">
+    <input id="mfaCod" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" style="text-align:center;font-size:22px;letter-spacing:6px">
+    <div class="erro" id="mfaErro"></div>
+    <button class="btn pri" type="submit">Confirmar</button>
+  </form>
+  <button class="btn" id="mfaSair" style="width:100%;margin-top:6px">Sair</button>
+</div>
+
+<div id="semAcesso" class="caixa-login" hidden>
+  <h2>Sem acesso</h2>
+  <p class="sub">Este login não faz parte da equipe do painel ou foi desativado. Fale com um administrador.</p>
+  <button class="btn" id="semSair" style="width:100%">Sair</button>
+</div>
+
+<div id="app" hidden>
+  <header>
+    <h1>Painel de assinantes</h1>
+    <nav class="abas"><button id="abaMed" class="sel">Médicos</button><button id="abaLem">Lembretes <span id="lemQt" class="qt" hidden></span></button><button id="abaNum">Números</button><button id="abaCfg">Configurações</button><button id="abaEqp">Equipe</button><button id="abaHis">Histórico</button></nav>
+    <span class="sp"></span>
+    <span id="quem" class="sub" style="color:#94a3b8"></span> <span id="meuPapel" class="papel"></span>
+    <button id="sair">Sair</button>
+  </header>
+  <div class="faixa-man" id="faixaMan" hidden></div>
+  <main>
+   <section id="telaMed">
+    <div class="saude" id="saude" hidden></div>
+    <div class="kpis" id="kpis"></div>
+    <div class="barra">
+      <input id="busca" type="search" placeholder="Buscar por nome, CRM, e-mail ou celular…">
+      <button class="btn" id="recarregar">Atualizar</button>
+      <button class="btn" id="exportar">Exportar CSV</button>
+    </div>
+    <div class="tab"><table>
+      <thead><tr><th>Médico</th><th>CRM</th><th>Contato</th><th>Situação</th><th>Vencimento</th><th>Último pagamento</th><th>Último uso</th><th>Ações</th></tr></thead>
+      <tbody id="linhas"></tbody>
+    </table></div>
+    <div class="rodape" id="rodape"></div>
+   </section>
+   <section id="telaLem" hidden>
+    <h2 style="font-size:17px;margin:0 0 4px">Lembretes</h2>
+    <p class="sub" style="margin:0 0 6px">Quem precisa de um contato agora. O botão do WhatsApp abre a conversa com a mensagem pronta (você revisa antes de enviar). “Feito” tira o lembrete da lista.</p>
+    <div id="lemLista"></div>
+   </section>
+   <section id="telaNum" hidden>
+    <h2 style="font-size:17px;margin:0 0 10px">Números do negócio</h2>
+    <div class="num-kpis" id="numKpis"></div>
+    <div class="graf"><h3>Receita recebida por mês</h3><div class="barras" id="numBarras"></div><div class="rot" id="numRot"></div></div>
+    <div class="tab"><table><thead><tr><th>Mês</th><th>Novos cadastros</th><th>Novos assinantes</th><th>Cancelamentos</th><th>Receita recebida</th></tr></thead><tbody id="numTb"></tbody></table></div>
+    <p class="sub" style="margin-top:8px">Conversão = médicos que assinaram ÷ médicos cujo teste já terminou (cortesias não entram). Receita prevista = renovações automáticas que vencem nos próximos 30 dias.</p>
+   </section>
+   <section id="telaEqp" hidden>
+    <h2 style="font-size:17px;margin:0 0 4px">Equipe do painel</h2>
+    <p class="sub" style="margin:0 0 10px"><b>Administrador</b>: acesso total. <b>Ajudante</b>: vê a lista de médicos e os lembretes, marca lembretes como feitos e escreve observações — não bloqueia, não dá cortesia, não muda valores nem configurações. Todos entram com verificação em 2 etapas.</p>
+    <div style="margin-bottom:10px"><button class="btn pri" id="eqpAdd">+ Adicionar pessoa</button></div>
+    <div class="tab"><table><thead><tr><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Situação</th><th>Desde</th><th>Ações</th></tr></thead><tbody id="eqpTb"></tbody></table></div>
+   </section>
+   <section id="telaHis" hidden>
+    <h2 style="font-size:17px;margin:0 0 4px">Histórico de ações</h2>
+    <p class="sub" style="margin:0 0 10px">Tudo o que foi feito no painel e pelo sistema (pagamentos), gravado automaticamente. Ninguém consegue apagar.</p>
+    <div class="hist-filtros">
+      <input id="hisBusca" type="search" placeholder="Buscar por médico ou pessoa da equipe…" style="flex:1;min-width:220px">
+      <select id="hisTipo"><option value="">Todas as ações</option><option value="med">Médicos</option><option value="cfg">Configurações</option><option value="eqp">Equipe</option><option value="sis">Pagamentos (sistema)</option><option value="login">Entradas no painel</option></select>
+      <select id="hisDias"><option value="7">Últimos 7 dias</option><option value="30" selected>Últimos 30 dias</option><option value="90">Últimos 90 dias</option><option value="365">Último ano</option></select>
+      <button class="btn" id="hisCsv">Exportar CSV</button>
+    </div>
+    <div class="tab"><table><thead><tr><th>Quando</th><th>Quem</th><th>Ação</th><th>Médico / alvo</th><th>Detalhe</th></tr></thead><tbody id="hisTb"></tbody></table></div>
+    <div class="rodape" id="hisRod"></div>
+   </section>
+   <section id="telaCfg" hidden>
+    <h2 style="font-size:17px;margin:0 0 4px">Modo manutenção</h2>
+    <div class="bloco" style="max-width:1000px;margin-bottom:18px">
+      <p class="sub" style="margin:0 0 6px">Vale para <b>todos os médicos</b>, inclusive cortesia. Uma consulta já em andamento termina normalmente. Use quando a plataforma mudar e a extensão precisar de ajuste.</p>
+      <label class="op"><input type="radio" name="man" value="normal"> <b>Normal</b>&nbsp;— tudo funcionando</label>
+      <label class="op"><input type="radio" name="man" value="so_timer"> <b>Só timer</b>&nbsp;— desliga o modo automático e o fila vazia de todos; timer e relatório continuam</label>
+      <label class="op"><input type="radio" name="man" value="tudo"> <b>Pausar tudo</b>&nbsp;— a extensão para (o histórico continua disponível para exportar)</label>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px">
+        <span>Mensagem na extensão:</span>
+        <input id="manMsg" maxlength="300" style="flex:1;min-width:260px;padding:7px 8px;border:1px solid var(--ln);border-radius:8px;font:inherit">
+        <button class="btn pri" id="manSalvar">Salvar</button><span class="ok-msg" id="manOk"></span>
+      </div>
+    </div>
+    <h2 style="font-size:17px;margin:0 0 4px">Tempo mínimo para o atendimento valer</h2>
+    <div class="bloco" style="max-width:1000px;margin-bottom:18px">
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <span>Vale a partir de</span>
+        <input id="tmMin" type="number" min="0" max="60" style="width:64px;padding:7px 8px;border:1px solid var(--ln);border-radius:8px;font:inherit"> min
+        <input id="tmSeg" type="number" min="0" max="59" step="5" style="width:64px;padding:7px 8px;border:1px solid var(--ln);border-radius:8px;font:inherit"> s
+        <button class="btn pri" id="tmSalvar">Salvar</button><span class="ok-msg" id="tmOk"></span>
+      </div>
+      <p class="sub" style="margin:8px 0 0">Regra da operadora para o atendimento contar (hoje 3 min). Muda em todas as extensões em até 5 min: cor do timer, aviso por voz, ✔/✖, totais e CSVs. Atendimentos já gravados mantêm a regra da época. Entre 30 s e 60 min.</p>
+    </div>
+    <h2 style="font-size:17px;margin:0 0 4px">Versão mínima da extensão</h2>
+    <div class="bloco" style="max-width:1000px;margin-bottom:18px">
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <span>Exigir pelo menos a versão</span>
+        <input id="verMin" placeholder="ex.: 2.1.0" style="width:110px;padding:7px 8px;border:1px solid var(--ln);border-radius:8px;font:inherit">
+        <button class="btn pri" id="verSalvar">Salvar</button><span class="ok-msg" id="verOk"></span>
+      </div>
+      <p class="sub" style="margin:8px 0 0">Quem estiver numa versão mais antiga vê “Atualize a extensão” e para de usar até atualizar. A versão de cada médico aparece na lista (coluna Último uso). Use 0.0.0 para não exigir.</p>
+    </div>
+    <h2 style="font-size:17px;margin:0 0 4px">Ajustes da tela da plataforma <span class="sub">(avançado)</span></h2>
+    <div class="bloco" style="max-width:1000px;margin-bottom:18px">
+      <p class="sub" style="margin:0 0 8px">Pontos que a extensão usa para reconhecer a tela da plataforma (vídeo, botões, fila, nome do paciente). Se a plataforma mudar um nome de botão ou de tela, corrige-se aqui e <b>todos recebem em até 5 minutos</b>, sem nova versão. Deixe <b>{}</b> para usar o padrão. Só altere com orientação.</p>
+      <textarea class="json" id="selJson" spellcheck="false"></textarea>
+      <div style="margin-top:8px"><button class="btn pri" id="selSalvar">Salvar ajustes</button><button class="btn" id="selPadrao" style="margin-left:6px">Voltar ao padrão</button><span class="ok-msg" id="selOk"></span></div>
+      <details><summary>Ver os pontos padrão (referência)</summary><pre id="selRef" style="font-size:11.5px;white-space:pre-wrap;background:#f8fafc;padding:8px;border-radius:8px"></pre></details>
+    </div>
+    <h2 style="font-size:17px;margin:0 0 4px">Cadastros</h2>
+    <div class="bloco" style="max-width:1000px;margin-bottom:18px">
+      <label class="chave"><input type="checkbox" id="cadAbertos"> <span id="cadTxt">Novos cadastros abertos</span></label>
+      <p class="sub" style="margin:0 0 8px">Fechado: ninguém novo consegue se cadastrar. Quem já tem cadastro continua usando normalmente.</p>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <span>Mensagem para quem tentar se cadastrar:</span>
+        <input id="cadMsg" maxlength="200" style="flex:1;min-width:260px;padding:7px 8px;border:1px solid var(--ln);border-radius:8px;font:inherit">
+        <button class="btn pri" id="cadSalvar">Salvar</button><span class="ok-msg" id="cadOk"></span>
+      </div>
+    </div>
+    <h2 style="font-size:17px;margin:0 0 4px">Mensalidade</h2>
+    <div class="bloco" style="max-width:1000px;margin-bottom:18px">
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <span>Valor para <b>novas assinaturas</b>: R$</span>
+        <input id="preco" type="number" min="1" max="10000" step="0.01" style="width:110px;padding:7px 8px;border:1px solid var(--ln);border-radius:8px;font:inherit">
+        <button class="btn pri" id="precoSalvar">Salvar valor</button>
+        <button class="btn" id="reajustar">Reajustar assinantes atuais…</button>
+        <span class="ok-msg" id="precoMsg"></span>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px">
+        <span>Texto do botão na extensão:</span>
+        <input id="txtAssinar" maxlength="80" style="flex:1;min-width:240px;padding:7px 8px;border:1px solid var(--ln);border-radius:8px;font:inherit">
+        <span class="sub">Prévia: <b id="previa"></b></span>
+      </div>
+      <p class="sub" style="margin:4px 0 0">Use <b>{valor}</b> onde quiser mostrar a mensalidade. Para esconder o valor, escreva só “Assinar”.</p>
+      <label class="op" style="margin-top:10px"><input type="checkbox" id="ocultarAssinar" style="width:auto"> <b>Ocultar o botão “Assinar”</b>&nbsp;na extensão (fase de testes com parceiros)</label>
+      <div style="margin-top:10px"><button class="btn pri" id="botaoSalvar">Salvar texto do botão</button></div>
+      <p class="sub" style="margin:8px 0 0">O novo valor aparece na hora no botão “Assinar” da extensão. Quem já assina continua com o valor antigo, a menos que você use <b>Reajustar assinantes atuais</b>.</p>
+    </div>
+    <h2 style="font-size:17px;margin:0 0 4px">Limites das funções da extensão</h2>
+    <p class="sub" style="margin:0 0 12px">Valem para <b>todos os médicos</b>, exceto quem tiver limites próprios (botão <b>Limites</b> na lista). A extensão aplica na próxima verificação, em poucos minutos. Tempos em segundos.</p>
+    <div id="cfgForm"></div>
+    <div style="margin-top:12px"><button class="btn pri" id="cfgSalvar">Salvar para todos</button><button class="btn" id="cfgFabrica" style="margin-left:6px">Restaurar valores de fábrica</button><span class="ok-msg" id="cfgMsg"></span></div>
+   </section>
+  </main>
+</div>
+
+<dialog id="dlg">
+  <form method="dialog" id="fDlg">
+    <h3 id="dTitulo"></h3>
+    <div id="dCorpo"></div>
+    <div class="fim"><button class="btn" value="cancelar">Cancelar</button><button class="btn pri" value="ok" id="dOk">Salvar</button></div>
+  </form>
+</dialog>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+const C = window.CONFIG;
+const sb = createClient(C.SUPABASE_URL, C.SUPABASE_ANON_KEY);
+const $ = (id) => document.getElementById(id);
+const DIA = 864e5;
+let MEDICOS = [], PAGS = [], FILTRO = "todos";
+
+// ---------- regra de situação (mesma do servidor) ----------
+function situacao(m, agora = Date.now()) {
+  if (m.bloqueio_manual) return { cod: "man", txt: "Bloqueado (manual)", cls: "b-man" };
+  const ca = m.cortesia_ate ? Date.parse(m.cortesia_ate) : 0;
+  if (m.cortesia_sem_prazo) return { cod: "cor", txt: "Cortesia · sem prazo", cls: "b-cor", vence: null, cortesia: true };
+  if (ca > agora) return { cod: "cor", txt: `Cortesia · ${Math.ceil((ca - agora) / DIA)}d`, cls: "b-cor", vence: ca, cortesia: true };
+  const tf = Date.parse(m.teste_fim), pa = m.pago_ate ? Date.parse(m.pago_ate) : 0;
+  const vence = Math.max(tf, pa, ca), dias = Math.ceil((vence - agora) / DIA);
+  if (agora <= vence) {
+    if (pa > agora) return dias <= 5 ? { cod: "vence", txt: `Ativo · vence em ${dias}d`, cls: "b-vence", vence } : { cod: "ativo", txt: "Ativo", cls: "b-ativo", vence };
+    return { cod: "teste", txt: `Teste · ${dias}d`, cls: "b-teste", vence };
+  }
+  if (agora <= vence + DIA) return { cod: "tol", txt: "Vencido · tolerância", cls: "b-tol", vence };
+  return { cod: "bloq", txt: pa ? "Bloqueado · vencido" : "Teste encerrado", cls: "b-bloq", vence };
+}
+
+const fmtData = (t) => t ? new Date(t).toLocaleDateString("pt-BR") : "—";
+const fmtDH = (t) => { if (!t) return "—"; const d = new Date(t), h = (Date.now() - d) / 36e5;
+  return h < 1 ? "agora há pouco" : h < 24 ? `hoje ${d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}` : d.toLocaleDateString("pt-BR"); };
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const fone = (c) => { const d = String(c || "").replace(/\D/g, ""); return d.length === 11 ? `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}` : d.length === 10 ? `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}` : d; };
+const semAcento = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+
+// ---------- login ----------
+let PAPEL = null, FATOR = null;
+const telas = (qual) => { for (const id of ["login", "mfa", "semAcesso", "app"]) $(id).hidden = id !== qual; };
+async function iniciar() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { telas("login"); return; }
+  // 2ª etapa obrigatória
+  const { data: nivel } = await sb.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (!nivel || nivel.currentLevel !== "aal2") { await prepararMfa(); return; }
+  // perfil na equipe
+  const { data: eu } = await sb.from("admins").select("papel, ativo, nome").eq("email", session.user.email.toLowerCase()).maybeSingle();
+  if (!eu || !eu.ativo) { telas("semAcesso"); return; }
+  PAPEL = eu.papel;
+  document.body.classList.toggle("ajudante", PAPEL === "ajudante");
+  $("quem").textContent = eu.nome || session.user.email;
+  $("meuPapel").textContent = PAPEL === "admin" ? "Administrador" : "Ajudante"; $("meuPapel").className = "papel " + PAPEL;
+  for (const k of ["Num", "Cfg", "Eqp", "His"]) $("aba" + k).hidden = PAPEL !== "admin";
+  telas("app");
+  try { if (!sessionStorage.getItem("loginRegistrado")) { await sb.rpc("registrar_login", { navegador: navigator.userAgent }); sessionStorage.setItem("loginRegistrado", "1"); } } catch (e) {}
+  vigiarInatividade();
+  await carregar();
+}
+async function prepararMfa() {
+  telas("mfa"); $("mfaErro").textContent = ""; $("mfaCod").value = "";
+  const { data: f } = await sb.auth.mfa.listFactors();
+  const verificado = (f?.totp || []).find(x => x.status === "verified");
+  if (verificado) { FATOR = verificado.id; $("mfaCadastro").hidden = true; $("mfaTxt").hidden = false; $("mfaTit").textContent = "Código de verificação"; setTimeout(() => $("mfaCod").focus(), 50); return; }
+  // primeiro acesso: cadastra o app autenticador
+  for (const x of (f?.all || []).filter(x => x.status !== "verified")) await sb.auth.mfa.unenroll({ factorId: x.id });
+  const { data: novo, error } = await sb.auth.mfa.enroll({ factorType: "totp", friendlyName: "Painel " + new Date().toISOString().slice(0, 10) });
+  if (error) { $("mfaErro").textContent = "Não foi possível iniciar a verificação: " + error.message; return; }
+  FATOR = novo.id; $("mfaQr").src = novo.totp.qr_code; $("mfaSecret").textContent = novo.totp.secret;
+  $("mfaCadastro").hidden = false; $("mfaTxt").hidden = true; $("mfaTit").textContent = "Ative a verificação em 2 etapas";
+}
+$("fMfa").onsubmit = async (e) => {
+  e.preventDefault();
+  const code = $("mfaCod").value.replace(/\D/g, "");
+  if (code.length !== 6) { $("mfaErro").textContent = "Digite os 6 números do app."; return; }
+  const { error } = await sb.auth.mfa.challengeAndVerify({ factorId: FATOR, code });
+  if (error) { $("mfaErro").textContent = "Código incorreto ou expirado. Tente o próximo código do app."; $("mfaCod").select(); return; }
+  iniciar();
+};
+$("mfaSair").onclick = $("semSair").onclick = async () => { await sb.auth.signOut(); location.reload(); };
+
+// saída automática após 4 h sem uso
+const LIMITE_INATIVO = 4 * 3600e3;
+let ultimaAtividade = Date.now(), vigiando = false;
+function vigiarInatividade() {
+  if (vigiando) return; vigiando = true;
+  for (const ev of ["mousemove", "keydown", "click", "scroll", "touchstart"]) addEventListener(ev, () => ultimaAtividade = Date.now(), { passive: true });
+  setInterval(async () => { if (Date.now() - ultimaAtividade > LIMITE_INATIVO) { await sb.auth.signOut(); alert("Você saiu do painel por inatividade."); location.reload(); } }, 60000);
+}
+$("fLogin").onsubmit = async (e) => {
+  e.preventDefault(); $("lErro").textContent = "";
+  const { error } = await sb.auth.signInWithPassword({ email: $("lEmail").value, password: $("lSenha").value });
+  if (error) { $("lErro").textContent = "E-mail ou senha incorretos."; return; }
+  iniciar();
+};
+$("sair").onclick = async () => { await sb.auth.signOut(); location.reload(); };
+
+// ---------- dados ----------
+async function carregar() {
+  const [m, p] = await Promise.all([
+    sb.from("medicos").select("*").order("criado_em", { ascending: false }),
+    sb.from("pagamentos").select("medico_id, mp_pagamento_id, valor, status, pago_em").order("pago_em", { ascending: false }),
+  ]);
+  if (m.error) { $("linhas").innerHTML = `<tr><td colspan="8" class="vazio">Sem permissão ou erro ao carregar (${esc(m.error.message)}). Confira se o seu e-mail está na tabela <b>admins</b>.</td></tr>`; return; }
+  MEDICOS = m.data || []; PAGS = p.data || [];
+  if (!$("telaCfg").hidden && document.activeElement && $("telaCfg").contains(document.activeElement)) { desenhar(); return; }
+  if (PAPEL === "admin") await carregarCfg();
+  carregarSaude();
+  desenhar(); contarLembretes();
+  if (!$("telaEqp").hidden) desenharEquipe(); if (!$("telaHis").hidden) desenharHistorico();
+  if (!$("telaLem").hidden) desenharLembretes(); if (!$("telaNum").hidden) desenharNumeros();
+}
+const ultimoPag = (id) => PAGS.find((x) => x.medico_id === id && x.status === "approved");
+
+function kpis() {
+  const s = MEDICOS.map((m) => situacao(m).cod);
+  const conta = (...c) => s.filter((x) => c.includes(x)).length;
+  const ini = new Date(); ini.setDate(1); ini.setHours(0, 0, 0, 0);
+  const receita = PAGS.filter((p) => p.status === "approved" && Date.parse(p.pago_em) >= ini).reduce((a, p) => a + Number(p.valor || 0), 0);
+  const cards = [
+    ["todos", MEDICOS.length, "Cadastrados"],
+    ["teste", conta("teste"), "Em teste grátis"],
+    ["ativo", conta("ativo", "vence"), "Assinantes ativos"],
+    ["cor", conta("cor"), "Cortesia"],
+    ["vence", conta("vence"), "Vencem em até 5 dias"],
+    ["tol", conta("tol", "bloq", "man"), "Vencidos / bloqueados"],
+    ...(PAPEL === "admin" ? [["receita", receita.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }), "Recebido neste mês"]] : []),
+  ];
+  $("kpis").innerHTML = cards.map(([k, v, t]) => `<div class="kpi ${FILTRO === k ? "sel" : ""}" data-f="${k}"><b>${v}</b><span>${t}</span></div>`).join("");
+  $("kpis").querySelectorAll(".kpi").forEach((el) => el.onclick = () => { if (el.dataset.f !== "receita") { FILTRO = el.dataset.f; desenhar(); } });
+}
+
+function filtrados() {
+  const q = semAcento($("busca").value);
+  return MEDICOS.filter((m) => {
+    const c = situacao(m).cod;
+    if (FILTRO === "teste" && c !== "teste") return false;
+    if (FILTRO === "ativo" && !["ativo", "vence"].includes(c)) return false;
+    if (FILTRO === "vence" && c !== "vence") return false;
+    if (FILTRO === "cor" && c !== "cor") return false;
+    if (FILTRO === "tol" && !["tol", "bloq", "man"].includes(c)) return false;
+    if (!q) return true;
+    return [m.nome, m.nome_plataforma, m.crm, `${m.crm}${m.uf}`, `${m.crm}-${m.uf}`, m.email, m.celular].some((v) => semAcento(v).includes(q));
+  });
+}
+
+function desenhar() {
+  kpis();
+  const lista = filtrados();
+  $("linhas").innerHTML = lista.length ? lista.map((m) => {
+    const s = situacao(m), up = ultimoPag(m.id);
+    const difere = m.nome_plataforma && semAcento(m.nome_plataforma) && !semAcento(m.nome).includes(semAcento(m.nome_plataforma).split(" ")[0]);
+    const zap = String(m.celular || "").replace(/\D/g, "");
+    return `<tr>
+      <td><div class="nome">${esc(m.nome)} ${difere ? `<span class="alerta" title="Nome na plataforma: ${esc(m.nome_plataforma)}">⚠️</span>` : ""}</div>
+          <div class="sub">CPF ${esc(m.cpf_mascara)}${m.observacoes ? " · " + esc(m.observacoes) : ""}</div>
+          ${m.bloqueio_manual ? `<div class="sub" style="color:var(--rd)">Bloqueado em ${fmtData(m.bloqueado_em)}${m.bloqueio_motivo ? ": " + esc(m.bloqueio_motivo) : ""}</div>` : ""}
+          ${m.alerta ? `<div class="alerta-linha">⚠️ ${esc(m.alerta)}<button data-a="alertaok" data-id="${m.id}">Resolvido</button></div>` : ""}</td>
+      <td>${esc(m.crm)}-${esc(m.uf)}</td>
+      <td><a href="https://wa.me/55${zap}" target="_blank" rel="noopener">${esc(fone(m.celular))}</a><div class="sub">${esc(m.email)}</div></td>
+      <td><span class="badge ${s.cls}">${s.txt}</span>${m.limites ? `<div style="margin-top:3px"><span class="badge b-lim" title="${esc(resumoLim(aplicarLim(limGlobal(), m.limites)))}">Limites próprios</span></div>` : ""}${m.mp_assinatura_status ? `<div class="sub">MP: ${esc(m.mp_assinatura_status)}${m.valor_assinatura ? " · " + Number(m.valor_assinatura).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) + "/mês" : ""}</div>` : ""}</td>
+      <td>${s.cortesia ? (s.vence ? fmtData(s.vence) : "sem prazo") : fmtData(s.vence)}<div class="sub">${s.cortesia ? "cortesia" : m.pago_ate ? "assinatura" : "fim do teste"}</div></td>
+      <td>${up ? `${fmtData(up.pago_em)}<div class="sub">${Number(up.valor).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</div>` : "—"}</td>
+      <td>${fmtDH(m.ultimo_uso)}<div class="sub">${m.versao_extensao ? "v" + esc(m.versao_extensao) : ""}</div></td>
+      <td><div class="acoes">
+        ${PAPEL !== "admin" ? `<button data-a="obs" data-id="${m.id}">Observação</button>` : `
+        ${m.bloqueio_manual ? "" : s.cortesia ? `<button class="cort" data-a="fimcort" data-id="${m.id}">Encerrar cortesia</button>` : `<button class="cort" data-a="cort" data-id="${m.id}">Cortesia</button>`}
+        ${m.bloqueio_manual ? "" : `<button data-a="dias" data-id="${m.id}">+ dias</button>`}
+        <button data-a="editar" data-id="${m.id}">Editar</button>
+        <button data-a="lim" data-id="${m.id}">Limites</button>
+        ${m.bloqueio_manual ? `<button data-a="desbloq" data-id="${m.id}">Desbloquear</button>` : `<button class="perigo" data-a="bloq" data-id="${m.id}">Bloquear</button>`}`}
+      </div></td></tr>`;
+  }).join("") : `<tr><td colspan="8" class="vazio">Nenhum médico ${MEDICOS.length ? "nesse filtro" : "cadastrado ainda"}.</td></tr>`;
+  $("rodape").textContent = `${lista.length} de ${MEDICOS.length} médicos · atualizado ${new Date().toLocaleTimeString("pt-BR")}`;
+  $("linhas").querySelectorAll("button[data-a]").forEach((b) => b.onclick = () => acao(b.dataset.a, b.dataset.id));
+}
+
+// ---------- ações ----------
+async function salvar(id, campos) {
+  const { error } = await sb.from("medicos").update(campos).eq("id", id);
+  if (error) alert("Não foi possível salvar: " + error.message);
+  await carregar();
+}
+function dialogo(titulo, html, botao = "Salvar", largo = false) {
+  $("dlg").className = largo ? "largo" : "";
+  $("dTitulo").textContent = titulo; $("dCorpo").innerHTML = html; $("dOk").textContent = botao;
+  return new Promise((ok) => { $("dlg").onclose = () => ok($("dlg").returnValue === "ok"); $("dlg").showModal(); });
+}
+async function acao(a, id) {
+  const m = MEDICOS.find((x) => x.id === id); if (!m) return;
+  if (a === "bloq") {
+    const temMp = m.mp_assinatura_id && ["authorized", "pending", "paused"].includes(m.mp_assinatura_status);
+    if (!(await dialogo("Bloquear médico", `<p><b>${esc(m.nome)}</b> perde o acesso à extensão em poucos minutos e <b>não consegue assinar nem renovar</b>, mesmo tentando pagar. Vale também para cortesia e teste.</p>
+      <label>Motivo (só você vê)</label><input id="bMot" placeholder="ex.: uso indevido, compartilhou acesso…">
+      ${temMp ? `<label class="op"><input type="checkbox" id="bCanc" checked style="width:auto"> Cancelar também a assinatura no Mercado Pago (para de cobrar)</label>` : ""}`, "Bloquear"))) return;
+    const cancelar = temMp && $("bCanc").checked;
+    await sb.from("medicos").update({ bloqueio_manual: true, bloqueado_em: new Date().toISOString(), bloqueio_motivo: $("bMot").value.trim() || null }).eq("id", id);
+    if (cancelar) {
+      const { data, error } = await sb.functions.invoke("admin-cancelar-assinatura", { body: { medico_id: id } });
+      if (error || !data?.ok) alert("Médico bloqueado, mas NÃO foi possível cancelar a assinatura no Mercado Pago. Cancele manualmente no painel do Mercado Pago.");
+    }
+    carregar();
+  } else if (a === "desbloq") {
+    if (await dialogo("Desbloquear", `<p>Devolver o acesso a <b>${esc(m.nome)}</b>? Ele volta às regras normais (teste, assinatura ou cortesia).${m.mp_assinatura_status === "cancelled" ? " A assinatura no Mercado Pago foi cancelada: ele precisará assinar de novo." : ""}</p>`, "Desbloquear"))
+      salvar(id, { bloqueio_manual: false, bloqueado_em: null, bloqueio_motivo: null });
+  } else if (a === "lim") {
+    const L = aplicarLim(limGlobal(), m.limites);
+    if (!(await dialogo(`Limites de ${m.nome}`, `
+      <label class="op"><input type="radio" name="lm" value="padrao" ${m.limites ? "" : "checked"}> Usar o padrão de todos (aba Configurações)</label>
+      <label class="op"><input type="radio" name="lm" value="proprio" ${m.limites ? "checked" : ""}> Limites próprios para este médico:</label>
+      <div id="limProprio" style="margin-top:8px">${formLimites(L, "m_")}</div>`, "Salvar", true))) return;
+    const proprio = document.querySelector('input[name="lm"]:checked').value === "proprio";
+    salvar(id, { limites: proprio ? lerLimites("m_") : null });
+  } else if (a === "obs") {
+    if (!(await dialogo("Observação", `<p>${esc(m.nome)}</p><label>Observação (a equipe vê)</label><textarea id="oTxt" rows="3">${esc(m.observacoes || "")}</textarea>`))) return;
+    salvar(id, { observacoes: $("oTxt").value.trim() || null });
+  } else if (a === "alertaok") {
+    salvar(id, { alerta: null });
+  } else if (a === "cort") {
+    const pad = new Date(Date.now() + 30 * DIA).toISOString().slice(0, 10);
+    const mpAtivo = m.mp_assinatura_status === "authorized";
+    if (!(await dialogo("Liberar cortesia", `<p>Liberar acesso gratuito para <b>${esc(m.nome)}</b>, sem passar pelo Mercado Pago.</p>
+      <label class="op"><input type="radio" name="tc" value="data" checked> Até a data</label>
+      <input id="cData" type="date" value="${pad}" min="${new Date().toISOString().slice(0, 10)}">
+      <label class="op"><input type="radio" name="tc" value="sem"> Sem prazo (até eu encerrar)</label>
+      ${mpAtivo ? `<div class="aviso-mp">⚠️ Este médico tem assinatura <b>ativa no Mercado Pago</b> e continuará sendo cobrado. Se a cortesia substitui a assinatura, cancele-a no painel do Mercado Pago.</div>` : ""}`, "Liberar cortesia"))) return;
+    const sem = document.querySelector('input[name="tc"]:checked').value === "sem";
+    if (sem) salvar(id, { cortesia_sem_prazo: true, cortesia_ate: null });
+    else {
+      const v = $("cData").value; if (!v) return alert("Escolha a data.");
+      salvar(id, { cortesia_sem_prazo: false, cortesia_ate: new Date(v + "T23:59:59-03:00").toISOString() });
+    }
+  } else if (a === "fimcort") {
+    if (await dialogo("Encerrar cortesia", `<p>Encerrar a cortesia de <b>${esc(m.nome)}</b>? Ele volta às regras normais: se não tiver assinatura em dia, terá 24 h de tolerância e depois será bloqueado.</p>`, "Encerrar"))
+      salvar(id, { cortesia_sem_prazo: false, cortesia_ate: m.cortesia_sem_prazo || Date.parse(m.cortesia_ate) > Date.now() ? new Date().toISOString() : m.cortesia_ate });
+  } else if (a === "dias") {
+    if (!(await dialogo("Dar dias extras", `<p>${esc(m.nome)} — vencimento atual: <b>${fmtData(situacao(m).vence)}</b></p>
+      <label>Quantos dias acrescentar?</label><input id="nDias" type="number" min="1" max="365" value="7">`, "Acrescentar"))) return;
+    const n = Math.max(1, Math.min(365, Number($("nDias").value) || 0));
+    const pa = m.pago_ate ? Date.parse(m.pago_ate) : 0, tf = Date.parse(m.teste_fim);
+    if (pa && pa >= tf) salvar(id, { pago_ate: new Date(Math.max(pa, Date.now()) + n * DIA).toISOString() });
+    else salvar(id, { teste_fim: new Date(Math.max(tf, Date.now()) + n * DIA).toISOString() });
+  } else if (a === "editar") {
+    if (!(await dialogo("Editar cadastro", `
+      <label>Nome</label><input id="eNome" value="${esc(m.nome)}">
+      <label>CRM</label><input id="eCrm" value="${esc(m.crm)}">
+      <label>UF</label><input id="eUf" maxlength="2" value="${esc(m.uf)}">
+      <label>E-mail</label><input id="eEmail" type="email" value="${esc(m.email)}">
+      <label>Celular</label><input id="eCel" value="${esc(m.celular)}">
+      <label>Observações (só você vê)</label><textarea id="eObs" rows="2">${esc(m.observacoes || "")}</textarea>
+      ${m.nome_plataforma ? `<p class="sub">Nome lido da plataforma: ${esc(m.nome_plataforma)}</p>` : ""}`))) return;
+    salvar(id, { nome: $("eNome").value.trim(), crm: $("eCrm").value.replace(/\D/g, ""), uf: $("eUf").value.trim().toUpperCase(),
+      email: $("eEmail").value.trim().toLowerCase(), celular: $("eCel").value.replace(/\D/g, ""), observacoes: $("eObs").value.trim() || null });
+  }
+}
+
+// ---------- limites das funções (mesma regra do servidor) ----------
+const FABRICA = { auto_permitido: true, fila_vazia_permitido: true, fila_vazia_consulta: 1, fila_vazia_espera: 0,
+  consulta_fila: { min: 1, max: 10, padrao: 2 }, espera_inicio: { min: 0, max: 60, padrao: 5 },
+  recarregar_permitido: true, recarregar: { min: 2, max: 120, padrao: 5 }, voz_permitida: true,
+  clique_forcado_permitido: true, segundo_plano_permitido: true, voltar_fila_permitido: true, voltar_fila: { min: 30, max: 600, padrao: 60 } };
+const TRAVA = { consulta_fila: [0.5, 300], espera_inicio: [0, 600], recarregar: [2, 600], fila_vazia_consulta: [0.5, 300], fila_vazia_espera: [0, 600], voltar_fila: [15, 3600] };
+const nLim = (v, a, b, d) => { const n = Number(v); return Number.isFinite(n) && v !== "" && v !== null ? Math.min(b, Math.max(a, Math.round(n * 10) / 10)) : d; };
+const fx = (v, base, [a, b]) => { const min = nLim(v?.min, a, b, base.min), max = Math.max(min, nLim(v?.max, a, b, base.max));
+  return { min, max, padrao: Math.min(max, Math.max(min, nLim(v?.padrao, a, b, base.padrao))) }; };
+function aplicarLim(base, o) {
+  if (!o || typeof o !== "object") return structuredClone(base);
+  const bo = (v, d) => typeof v === "boolean" ? v : d;
+  return { auto_permitido: bo(o.auto_permitido, base.auto_permitido), fila_vazia_permitido: bo(o.fila_vazia_permitido, base.fila_vazia_permitido),
+    fila_vazia_consulta: nLim(o.fila_vazia_consulta, ...TRAVA.fila_vazia_consulta, base.fila_vazia_consulta),
+    fila_vazia_espera: nLim(o.fila_vazia_espera, ...TRAVA.fila_vazia_espera, base.fila_vazia_espera),
+    consulta_fila: fx(o.consulta_fila ?? base.consulta_fila, base.consulta_fila, TRAVA.consulta_fila),
+    espera_inicio: fx(o.espera_inicio ?? base.espera_inicio, base.espera_inicio, TRAVA.espera_inicio),
+    recarregar_permitido: bo(o.recarregar_permitido, base.recarregar_permitido),
+    recarregar: fx(o.recarregar ?? base.recarregar, base.recarregar, TRAVA.recarregar), voz_permitida: bo(o.voz_permitida, base.voz_permitida),
+    clique_forcado_permitido: bo(o.clique_forcado_permitido, base.clique_forcado_permitido),
+    segundo_plano_permitido: bo(o.segundo_plano_permitido, base.segundo_plano_permitido),
+    voltar_fila_permitido: bo(o.voltar_fila_permitido, base.voltar_fila_permitido),
+    voltar_fila: fx(o.voltar_fila ?? base.voltar_fila, base.voltar_fila, TRAVA.voltar_fila) };
+}
+let CFG_GLOBAL = {};
+const limGlobal = () => aplicarLim(FABRICA, CFG_GLOBAL);
+
+function formLimites(L, px) {
+  const fxl = (k, t) => `<div class="lim-linha"><span>${t}</span><input id="${px}${k}_min" type="number" step="0.5" value="${L[k].min}"><input id="${px}${k}_max" type="number" step="0.5" value="${L[k].max}"><input id="${px}${k}_padrao" type="number" step="0.5" value="${L[k].padrao}"></div>`;
+  const ch = (k, t) => `<label class="chave"><input type="checkbox" id="${px}${k}" ${L[k] ? "checked" : ""}> ${t}</label>`;
+  const um = (k, t) => `<div class="lim-um"><span>${t}</span><input id="${px}${k}" type="number" step="0.5" value="${L[k]}"></div>`;
+  return `<div class="cfg-grade">
+    <div class="bloco">${ch("auto_permitido", "Modo automático liberado")}
+      <p class="sub">Clicar sozinho em "Iniciar um atendimento". Desligado: a extensão só cronometra.</p>
+      <div class="lim-linha cab"><span></span><span>mínimo</span><span>máximo</span><span>padrão</span></div>
+      ${fxl("consulta_fila", "Consultar a fila a cada")}${fxl("espera_inicio", "Chamar próximo após")}</div>
+    <div class="bloco">${ch("fila_vazia_permitido", "Modo fila vazia liberado")}
+      <p class="sub">Captação no ritmo máximo. Só funciona com o modo automático liberado.</p>
+      ${um("fila_vazia_consulta", "Consultar a fila a cada (s)")}${um("fila_vazia_espera", "Chamar próximo após (s)")}</div>
+    <div class="bloco">${ch("recarregar_permitido", "Recarregar a página como reserva")}
+      <p class="sub">Usado só se a consulta direta da fila não funcionar.</p>
+      <div class="lim-linha cab"><span></span><span>mínimo</span><span>máximo</span><span>padrão</span></div>
+      ${fxl("recarregar", "Recarregar a cada")}</div>
+    <div class="bloco">${ch("voz_permitida", "Aviso por voz liberado")}<p class="sub">"Paciente captado" e "Vídeo aberto".</p></div>
+    <div class="bloco">${ch("clique_forcado_permitido", "Clique antecipado")}
+      <p class="sub">Clica assim que a extensão vê paciente na fila, sem esperar a tela da plataforma liberar o botão. Até 5 tentativas por paciente. Desligue se a plataforma reclamar.</p></div>
+    <div class="bloco">${ch("segundo_plano_permitido", "Captar com a aba escondida")}
+      <p class="sub">Com a aba em segundo plano ou minimizada, consulta a fila no mesmo ritmo e traz a aba para a frente quando aparece paciente.</p></div>
+    <div class="bloco">${ch("voltar_fila_permitido", "Voltar sozinho para a fila")}
+      <p class="sub">Em outra tela da plataforma, sem consulta aberta, volta para a fila depois de um tempo sem uso.</p>
+      <div class="lim-linha cab"><span></span><span>mínimo</span><span>máximo</span><span>padrão</span></div>
+      ${fxl("voltar_fila", "Voltar após (sem uso)")}</div>
+  </div>`;
+}
+function lerLimites(px) {
+  const v = (id) => $(px + id).value, c = (id) => $(px + id).checked;
+  const fxr = (k) => ({ min: v(k + "_min"), max: v(k + "_max"), padrao: v(k + "_padrao") });
+  return aplicarLim(FABRICA, { auto_permitido: c("auto_permitido"), fila_vazia_permitido: c("fila_vazia_permitido"),
+    fila_vazia_consulta: v("fila_vazia_consulta"), fila_vazia_espera: v("fila_vazia_espera"),
+    consulta_fila: fxr("consulta_fila"), espera_inicio: fxr("espera_inicio"), recarregar_permitido: c("recarregar_permitido"),
+    recarregar: fxr("recarregar"), voz_permitida: c("voz_permitida"),
+    clique_forcado_permitido: c("clique_forcado_permitido"), segundo_plano_permitido: c("segundo_plano_permitido"), voltar_fila_permitido: c("voltar_fila_permitido"), voltar_fila: fxr("voltar_fila") });
+}
+const resumoLim = (L) => [!L.auto_permitido ? "sem automático" : !L.fila_vazia_permitido ? "sem fila vazia" : null,
+  L.auto_permitido ? `fila ${L.consulta_fila.min}–${L.consulta_fila.max}s` : null].filter(Boolean).join(" · ");
+
+let PRECO = 200;
+async function carregarCfg() {
+  const { data } = await sb.from("config").select("limites, preco_mensal, texto_assinar, ocultar_assinar, cadastros_abertos, mensagem_cadastro, manutencao, mensagem_manutencao, seletores, versao_minima, tempo_minimo").eq("id", 1).maybeSingle();
+  $("verMin").value = data?.versao_minima ?? "0.0.0";
+  { const t = data?.tempo_minimo ?? 180; $("tmMin").value = Math.floor(t / 60); $("tmSeg").value = t % 60; }
+  $("selJson").value = JSON.stringify(data?.seletores ?? {}, null, 2);
+  const mm = data?.manutencao || "normal"; document.querySelectorAll('input[name="man"]').forEach(r => r.checked = r.value === mm);
+  $("manMsg").value = data?.mensagem_manutencao ?? ""; faixaMan(mm);
+  $("cadAbertos").checked = data?.cadastros_abertos !== false; $("cadMsg").value = data?.mensagem_cadastro ?? ""; pintarCad();
+  $("txtAssinar").value = data?.texto_assinar ?? "Assinar — {valor}/mês";
+  $("ocultarAssinar").checked = data?.ocultar_assinar === true; previa();
+  CFG_GLOBAL = data?.limites || {};
+  PRECO = Number(data?.preco_mensal ?? 200); $("preco").value = PRECO;
+  $("cfgForm").innerHTML = formLimites(limGlobal(), "g_");
+}
+$("cfgSalvar").onclick = async () => {
+  const L = lerLimites("g_");
+  const { error } = await sb.from("config").update({ limites: L, atualizado_em: new Date().toISOString() }).eq("id", 1);
+  $("cfgMsg").textContent = error ? "Erro ao salvar: " + error.message : "Salvo. Os médicos recebem em poucos minutos.";
+  if (!error) { CFG_GLOBAL = L; $("cfgForm").innerHTML = formLimites(L, "g_"); desenhar(); }
+  setTimeout(() => $("cfgMsg").textContent = "", 5000);
+};
+const brl = v => Number(v).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const msgPreco = t => { $("precoMsg").textContent = t; setTimeout(() => $("precoMsg").textContent = "", 6000); };
+$("precoSalvar").onclick = async () => {
+  const v = Math.round(Number($("preco").value) * 100) / 100;
+  if (!(v >= 1 && v <= 10000)) return msgPreco("Valor inválido.");
+  const { error } = await sb.from("config").update({ preco_mensal: v, atualizado_em: new Date().toISOString() }).eq("id", 1);
+  if (error) return msgPreco("Erro: " + error.message);
+  PRECO = v; msgPreco(`Salvo: novas assinaturas custam ${brl(v)}/mês.`);
+};
+// ---------- versão mínima e ajustes da tela ----------
+const SEL_PADRAO = {
+  area_video: 'section.video-area, .video-area', video_paciente: '.video-area__remote-media, [aria-label="Vídeo do paciente"]',
+  video_paciente_oculto: 'video-area__remote-media--hidden', video_proprio: '.video-area__pip, [aria-label="Seu vídeo"]',
+  nome_paciente: '#patientHeader .header__name, .header__name', nome_registro: '#patientHeader .header__registry-name, .header__registry-name',
+  tela_fila: 'app-attendance-ready', area_fila: 'app-attendance-ready, section.attendance',
+  consulta_aberta: 'app-consulta-shell, #patientHeader, app-finalizacao-atendimento-v2-page', botao_encerrar_classe: 'video-area__control-btn--danger',
+  texto_botao_iniciar: 'iniciar (um )?atendimento|iniciar consulta', texto_encerrar: 'encerrar chamada',
+  texto_finalizar: 'finalizar (o )?atendimento|finalizar consulta',
+  texto_fila_qtd: 'h[áa]\\s+(\\d+)\\s+pacientes?|(\\d+)\\s+pacientes?\\s+na\\s+fila',
+  texto_fila_zero: 'n[ãa]o h[áa] pacientes|nenhum paciente|fila vazia', texto_nome_medico: 'Ol[áa],\\s*([^\\n]{3,80})',
+  api_fila: 'count\\?medicalInterview=', url_fila: '/fila' };
+$("selRef").textContent = JSON.stringify(SEL_PADRAO, null, 2);
+const okMsg = (id, t) => { $(id).textContent = t; setTimeout(() => $(id).textContent = "", 6000); };
+$("tmSalvar").onclick = async () => {
+  const t = Math.round((+$("tmMin").value || 0) * 60 + (+$("tmSeg").value || 0));
+  if (t < 30 || t > 3600) return okMsg("tmOk", "Use entre 30 s e 60 min.");
+  const rot = Math.floor(t / 60) + (t % 60 ? ":" + String(t % 60).padStart(2, "0") : "") + " min";
+  if (!confirm(`Mudar o tempo mínimo para ${rot} para TODOS os médicos?`)) return;
+  const { error } = await sb.from("config").update({ tempo_minimo: t, atualizado_em: new Date().toISOString() }).eq("id", 1);
+  okMsg("tmOk", error ? "Erro: " + error.message : `Salvo: atendimentos valem a partir de ${rot}. As extensões atualizam em até 5 min.`);
+};
+$("verSalvar").onclick = async () => {
+  const v = $("verMin").value.trim() || "0.0.0";
+  if (!/^\d+\.\d+\.\d+$/.test(v)) return okMsg("verOk", "Use o formato 2.1.0");
+  const { error } = await sb.from("config").update({ versao_minima: v, atualizado_em: new Date().toISOString() }).eq("id", 1);
+  okMsg("verOk", error ? "Erro: " + error.message : v === "0.0.0" ? "Salvo: nenhuma versão exigida." : `Salvo: exigindo a versão ${v} ou mais nova.`);
+};
+$("selSalvar").onclick = async () => {
+  let obj; try { obj = JSON.parse($("selJson").value || "{}"); } catch (e) { return okMsg("selOk", "Texto inválido: confira vírgulas e aspas."); }
+  if (!obj || typeof obj !== "object" || Array.isArray(obj)) return okMsg("selOk", "Precisa ser um objeto { … }.");
+  const desconhecidas = Object.keys(obj).filter(k => !(k in SEL_PADRAO));
+  if (desconhecidas.length) return okMsg("selOk", "Chaves desconhecidas: " + desconhecidas.join(", "));
+  for (const k of Object.keys(obj)) { if (typeof obj[k] !== "string") return okMsg("selOk", `“${k}” precisa ser texto.`);
+    if (k.startsWith("texto_") || k === "api_fila" || k === "url_fila") { try { new RegExp(obj[k]); } catch (e) { return okMsg("selOk", `“${k}” inválido.`); } }
+    else if (k !== "video_paciente_oculto" && k !== "botao_encerrar_classe") { try { document.querySelector(obj[k]); } catch (e) { return okMsg("selOk", `“${k}” inválido.`); } } }
+  const { error } = await sb.from("config").update({ seletores: obj, atualizado_em: new Date().toISOString() }).eq("id", 1);
+  okMsg("selOk", error ? "Erro: " + error.message : Object.keys(obj).length ? "Salvo: os médicos recebem em até 5 minutos." : "Salvo: usando o padrão.");
+};
+$("selPadrao").onclick = () => { $("selJson").value = "{}"; okMsg("selOk", "Clique em Salvar ajustes para aplicar."); };
+
+// ---------- saúde da extensão (falhas detectadas) ----------
+const NOMES_FALHA = {
+  fila_nao_reconhecida: "tela da fila não reconhecida", botao_iniciar_ausente: "botão “Iniciar um atendimento” não encontrado",
+  consulta_fila_sem_api: "consulta da fila não identificada (recarregando a página)", video_nao_reconhecido: "vídeo do paciente não reconhecido", fila_fundo_falhou: "consulta da fila com a aba escondida falhou",
+  nome_paciente_ausente: "nome do paciente não encontrado", encerrar_nao_detectado: "clique em “Encerrar chamada” não detectado",
+  cpf_nao_capturado: "médico não identificado na plataforma" };
+async function carregarSaude() {
+  const desde = new Date(Date.now() - 24 * 36e5).toISOString();
+  const { data, error } = await sb.from("eventos_saude").select("tipo, medico_id, versao, criado_em").gte("criado_em", desde).order("criado_em", { ascending: false });
+  const box = $("saude"); box.hidden = false;
+  if (error) { box.className = "saude"; box.textContent = "Não foi possível carregar a saúde da extensão."; return; }
+  const duasH = Date.now() - 2 * 36e5, grupos = {};
+  for (const e of data || []) { const g = grupos[e.tipo] ||= { m2: new Set(), m24: new Set(), ult: e.criado_em };
+    g.m24.add(e.medico_id); if (Date.parse(e.criado_em) >= duasH) g.m2.add(e.medico_id); }
+  const tipos = Object.entries(grupos).sort((a, b) => b[1].m2.size - a[1].m2.size || b[1].m24.size - a[1].m24.size);
+  const graves = tipos.filter(([, g]) => g.m2.size >= 2);
+  if (!tipos.length) { box.className = "saude ok"; box.innerHTML = "<b class='t'>✅ Extensão funcionando normalmente</b>Nenhuma falha detectada nas últimas 24 h."; return; }
+  box.className = "saude " + (graves.length ? "alerta" : "atencao");
+  box.innerHTML = `<b class="t">${graves.length ? "⚠️ Possível mudança na plataforma" : "Falhas isoladas nas últimas 24 h"}</b><ul>` +
+    tipos.map(([t, g]) => `<li><b>${esc(NOMES_FALHA[t] || t)}</b>: ${g.m2.size} médico(s) nas últimas 2 h · ${g.m24.size} em 24 h · último às ${new Date(g.ult).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}</li>`).join("") + "</ul>" +
+    (graves.length ? `<div class="dica">Sugestão: ative <b>Só timer</b> (ou Pausar tudo) em Configurações → Modo manutenção enquanto a extensão é ajustada.</div>` : "");
+}
+
+function faixaMan(mm) {
+  $("faixaMan").hidden = mm === "normal";
+  $("faixaMan").className = "faixa-man" + (mm === "so_timer" ? " timer" : "");
+  $("faixaMan").textContent = mm === "tudo" ? "🛠️ MODO MANUTENÇÃO: extensão PAUSADA para todos os médicos" : "🛠️ MODO MANUTENÇÃO: só timer (automático desligado para todos)";
+}
+$("manSalvar").onclick = async () => {
+  const mm = document.querySelector('input[name="man"]:checked')?.value || "normal";
+  if (mm !== "normal" && !(await dialogo("Ativar modo manutenção", `<p>${mm === "tudo" ? "A extensão vai <b>parar para todos os médicos</b>" : "O <b>modo automático e o fila vazia</b> vão ser desligados para todos os médicos"} em até 5 minutos. Consultas em andamento terminam normalmente.</p>`, "Ativar"))) return;
+  const { error } = await sb.from("config").update({ manutencao: mm, mensagem_manutencao: $("manMsg").value.trim() || "Estamos fazendo ajustes na extensão. Voltamos em breve.", atualizado_em: new Date().toISOString() }).eq("id", 1);
+  $("manOk").textContent = error ? "Erro: " + error.message : mm === "normal" ? "Salvo: tudo funcionando normalmente." : "Salvo: modo manutenção ativado.";
+  if (!error) faixaMan(mm);
+  setTimeout(() => $("manOk").textContent = "", 6000);
+};
+function pintarCad() { const a = $("cadAbertos").checked;
+  $("cadTxt").textContent = a ? "Novos cadastros abertos" : "Novos cadastros FECHADOS"; $("cadTxt").style.color = a ? "" : "var(--rd)"; }
+$("cadAbertos").onchange = pintarCad;
+$("cadSalvar").onclick = async () => {
+  const { error } = await sb.from("config").update({ cadastros_abertos: $("cadAbertos").checked,
+    mensagem_cadastro: $("cadMsg").value.trim() || "Novos cadastros estão temporariamente fechados.", atualizado_em: new Date().toISOString() }).eq("id", 1);
+  $("cadOk").textContent = error ? "Erro: " + error.message : $("cadAbertos").checked ? "Salvo: cadastros abertos." : "Salvo: novos cadastros bloqueados.";
+  setTimeout(() => $("cadOk").textContent = "", 6000);
+};
+function previa() {
+  const v = Number($("preco").value) || PRECO;
+  const valor = v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: Number.isInteger(v) ? 0 : 2 });
+  $("previa").textContent = $("ocultarAssinar").checked ? "(botão oculto)" : ($("txtAssinar").value || "Assinar").replaceAll("{valor}", valor);
+}
+$("txtAssinar").oninput = previa; $("ocultarAssinar").onchange = previa; $("preco").oninput = previa;
+$("botaoSalvar").onclick = async () => {
+  const t = $("txtAssinar").value.trim() || "Assinar";
+  const { error } = await sb.from("config").update({ texto_assinar: t, ocultar_assinar: $("ocultarAssinar").checked, atualizado_em: new Date().toISOString() }).eq("id", 1);
+  msgPreco(error ? "Erro: " + error.message : $("ocultarAssinar").checked ? "Salvo: o botão Assinar está oculto na extensão." : "Salvo: os médicos veem o novo texto em poucos minutos.");
+};
+$("reajustar").onclick = async () => {
+  const v = Math.round(Number($("preco").value) * 100) / 100;
+  if (!(v >= 1 && v <= 10000)) return msgPreco("Digite o novo valor no campo antes.");
+  const sim = await sb.functions.invoke("admin-reajustar", { body: { valor: v, simular: true } });
+  if (sim.error || !sim.data?.ok) return msgPreco("Não foi possível consultar os assinantes.");
+  const n = sim.data.afetados;
+  if (!n) return msgPreco(`Nenhum assinante ativo com valor diferente de ${brl(v)}.`);
+  if (!(await dialogo("Reajustar assinantes atuais", `
+    <p>Mudar a mensalidade de <b>${n} assinante${n > 1 ? "s" : ""}</b> para <b>${brl(v)}</b> no Mercado Pago.</p>
+    <p>Vale <b>a partir da próxima cobrança</b> de cada um. A extensão mostra o aviso “Sua mensalidade passa para ${brl(v)} a partir da renovação de dd/mm” até lá.</p>
+    <div class="aviso-mp">⚖️ Aumento em assinatura já existente normalmente exige aviso prévio ao assinante, com possibilidade de cancelar. Confirme o prazo com o jurídico/contador antes de aplicar.</div>`, "Aplicar reajuste"))) return;
+  const r = await sb.functions.invoke("admin-reajustar", { body: { valor: v } });
+  if (r.error) return msgPreco("Erro ao reajustar.");
+  msgPreco(r.data.falhas?.length ? `${r.data.atualizados} atualizados; falharam: ${r.data.falhas.join(", ")}` : `${r.data.atualizados} assinante(s) reajustado(s) para ${brl(v)}.`);
+  carregar();
+};
+$("cfgFabrica").onclick = () => { $("cfgForm").innerHTML = formLimites(FABRICA, "g_"); $("cfgMsg").textContent = "Valores de fábrica carregados. Clique em Salvar para aplicar."; };
+const ABAS = { Med: "telaMed", Lem: "telaLem", Num: "telaNum", Cfg: "telaCfg", Eqp: "telaEqp", His: "telaHis" };
+function irAba(a) { for (const [k, t] of Object.entries(ABAS)) { $(t).hidden = k !== a; $("aba" + k).className = k === a ? "sel" : ""; }
+  if (a === "Lem") desenharLembretes(); if (a === "Num") desenharNumeros(); if (a === "Eqp") desenharEquipe(); if (a === "His") desenharHistorico(); }
+for (const k of Object.keys(ABAS)) $("aba" + k).onclick = () => irAba(k);
+
+// ---------- LEMBRETES ----------
+const PRODUTO = "NextMed";
+const primeiro = n => String(n || "").trim().split(/\s+/)[0] || "";
+const dd = t => new Date(t).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+function lembretes() {
+  const agora = Date.now(), L = [];
+  for (const m of MEDICOS) {
+    if (m.bloqueio_manual) continue;
+    const s = situacao(m), feitos = m.lembretes_feitos || {}, nome = primeiro(m.nome);
+    const tf = Date.parse(m.teste_fim), pa = m.pago_ate ? Date.parse(m.pago_ate) : 0, ca = m.cortesia_ate ? Date.parse(m.cortesia_ate) : 0;
+    const add = (chave, ic, grupo, titulo, msg) => { if (!feitos[chave]) L.push({ m, chave, ic, grupo, titulo, msg }); };
+    const dias = t => Math.max(0, Math.ceil((t - agora) / DIA));
+    if (s.cod === "teste" && tf - agora <= 2 * DIA)
+      add("teste:" + m.teste_fim, "⏳", "Teste grátis", `Teste termina ${dias(tf) <= 1 ? "hoje/amanhã" : "em " + dias(tf) + " dias"} (${dd(tf)})`,
+        `Olá, ${nome}! Seu teste grátis do ${PRODUTO} termina em ${dd(tf)}. Para continuar usando, é só clicar em “Assinar” no painel da extensão. Qualquer dúvida, estou à disposição.`);
+    if (!pa && !s.cortesia && tf < agora && agora - tf < 10 * DIA)
+      add("testefim:" + m.teste_fim, "🔚", "Teste grátis", `Teste terminou em ${dd(tf)} e não assinou`,
+        `Olá, ${nome}! Seu teste do ${PRODUTO} terminou. Gostou da ferramenta? Se quiser continuar, é só clicar em “Assinar” no painel da extensão. Se algo não funcionou bem, me conta?`);
+    if (pa > agora && pa - agora <= 3 * DIA && m.mp_assinatura_status !== "authorized" && !s.cortesia)
+      add("vence:" + m.pago_ate, "📅", "Vencimentos", `Vence em ${dd(pa)} sem renovação automática`,
+        `Olá, ${nome}! Sua assinatura do ${PRODUTO} vence em ${dd(pa)}. Para não perder o acesso, renove pelo botão “Assinar” no painel da extensão.`);
+    if (pa && pa < agora && agora - pa < 10 * DIA && !s.cortesia && pa >= tf)
+      add("vencido:" + m.pago_ate, "🔴", "Vencimentos", `Assinatura venceu em ${dd(pa)}`,
+        `Olá, ${nome}! Sua assinatura do ${PRODUTO} venceu em ${dd(pa)} e o acesso foi pausado. Para reativar, é só clicar em “Assinar” no painel da extensão.`);
+    const rec = PAGS.find(p => p.medico_id === m.id && p.status === "rejected" && agora - Date.parse(p.pago_em) < 7 * DIA);
+    if (rec && !PAGS.some(p => p.medico_id === m.id && p.status === "approved" && Date.parse(p.pago_em) > Date.parse(rec.pago_em)))
+      add("recusado:" + rec.mp_pagamento_id, "💳", "Pagamentos", `Pagamento recusado em ${dd(rec.pago_em)}`,
+        `Olá, ${nome}! O pagamento da sua assinatura do ${PRODUTO} foi recusado pelo cartão. Pode verificar com o banco ou atualizar o cartão no Mercado Pago? Assim o acesso não é interrompido.`);
+    if (ca > agora && ca - agora <= 5 * DIA && !m.cortesia_sem_prazo)
+      add("cortesia:" + m.cortesia_ate, "🎁", "Cortesias", `Cortesia termina em ${dd(ca)}`,
+        `Olá, ${nome}! Seu acesso cortesia ao ${PRODUTO} termina em ${dd(ca)}. Se quiser continuar, é só clicar em “Assinar” no painel da extensão.`);
+    const uso = m.ultimo_uso ? Date.parse(m.ultimo_uso) : 0;
+    if ((s.cod === "ativo" || s.cod === "vence") && uso && agora - uso > 7 * DIA)
+      add("semuso:" + new Date(uso).toISOString().slice(0, 10), "💤", "Engajamento", `Assinante sem usar há ${Math.floor((agora - uso) / DIA)} dias`,
+        `Olá, ${nome}! Notei que você não usa o ${PRODUTO} há alguns dias. Está tudo funcionando bem? Se precisar de ajuda, me chama.`);
+  }
+  return L;
+}
+function contarLembretes() { const n = lembretes().length; $("lemQt").hidden = !n; $("lemQt").textContent = n; }
+function desenharLembretes() {
+  const L = lembretes(); contarLembretes();
+  if (!L.length) { $("lemLista").innerHTML = `<div class="saude ok"><b class="t">✅ Nenhum lembrete pendente</b>Ninguém precisa de contato agora.</div>`; return; }
+  const ordem = ["Pagamentos", "Vencimentos", "Teste grátis", "Cortesias", "Engajamento"];
+  let html = "";
+  for (const g of ordem) { const itens = L.filter(x => x.grupo === g); if (!itens.length) continue;
+    html += `<div class="grupo-t">${g} (${itens.length})</div>` + itens.map((x, i) => {
+      const zap = String(x.m.celular || "").replace(/\D/g, "");
+      return `<div class="lem"><div class="ic">${x.ic}</div>
+        <div><div class="tt">${esc(x.m.nome)} · ${esc(x.titulo)}</div><div class="msgz">${esc(x.m.crm)}-${esc(x.m.uf)} · ${esc(fone(x.m.celular))}</div></div>
+        <div class="ac"><a class="zap" target="_blank" rel="noopener" href="https://wa.me/55${zap}?text=${encodeURIComponent(x.msg)}">WhatsApp</a>
+        <button data-copiar="${esc(x.msg)}">Copiar texto</button><button data-feito="${x.m.id}" data-chave="${esc(x.chave)}">Feito</button></div></div>`; }).join(""); }
+  $("lemLista").innerHTML = html;
+  $("lemLista").querySelectorAll("[data-copiar]").forEach(b => b.onclick = () => { navigator.clipboard.writeText(b.dataset.copiar); b.textContent = "Copiado"; });
+  $("lemLista").querySelectorAll("[data-feito]").forEach(b => b.onclick = async () => {
+    const m = MEDICOS.find(x => x.id === b.dataset.feito); const feitos = Object.assign({}, m.lembretes_feitos || {}, { [b.dataset.chave]: new Date().toISOString() });
+    // guarda só os últimos 60 dias para não crescer sem fim
+    for (const [k, v] of Object.entries(feitos)) if (Date.now() - Date.parse(v) > 60 * DIA) delete feitos[k];
+    await salvar(m.id, { lembretes_feitos: feitos }); desenharLembretes(); });
+}
+
+// ---------- NÚMEROS ----------
+const chaveMes = t => { const d = new Date(t); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"); };
+const nomeMes = k => { const [a, m] = k.split("-"); return new Date(+a, +m - 1, 1).toLocaleDateString("pt-BR", { month: "short", year: "2-digit" }).replace(".", ""); };
+function desenharNumeros() {
+  const agora = Date.now(), aprov = PAGS.filter(p => p.status === "approved");
+  const pagou = new Set(aprov.map(p => p.medico_id));
+  const ativos = MEDICOS.filter(m => { const s = situacao(m).cod; return s === "ativo" || s === "vence"; });
+  const emTeste = MEDICOS.filter(m => situacao(m).cod === "teste").length;
+  const convertidos = MEDICOS.filter(m => pagou.has(m.id) || m.assinou_em).length;
+  // base da conversão: quem pagou + quem teve o teste encerrado (cortesias sem pagamento ficam de fora)
+  const terminaram = MEDICOS.filter(m => pagou.has(m.id) || m.assinou_em || (Date.parse(m.teste_fim) < agora && !m.cortesia_sem_prazo && !m.cortesia_ate)).length;
+  const conv = terminaram ? Math.round(convertidos / terminaram * 100) : null;
+  const valores = ativos.map(m => Number(m.valor_assinatura || 0)).filter(v => v > 0);
+  const ticket = valores.length ? valores.reduce((a, b) => a + b, 0) / valores.length : null;
+  const prevista = ativos.filter(m => m.mp_assinatura_status === "authorized" && Date.parse(m.pago_ate) - agora <= 30 * DIA)
+    .reduce((a, m) => a + Number(m.valor_assinatura || 0), 0);
+  const mesAtual = chaveMes(agora);
+  const cancMes = MEDICOS.filter(m => m.mp_assinatura_status === "cancelled" && m.mp_status_em && chaveMes(m.mp_status_em) === mesAtual).length;
+  $("numKpis").innerHTML = [
+    [ativos.length, "Assinantes ativos", ""], [emTeste, "Em teste grátis", ""],
+    [conv === null ? "—" : conv + "%", "Conversão teste → assinatura", `${convertidos} de ${terminaram} médicos`],
+    [brl(prevista), "Receita prevista (30 dias)", "renovações automáticas"],
+    [ticket === null ? "—" : brl(ticket), "Ticket médio", "por assinante ativo"],
+    [cancMes, "Cancelamentos neste mês", ""],
+  ].map(([v, t, s]) => `<div><b>${v}</b><span>${t}</span>${s ? `<small>${s}</small>` : ""}</div>`).join("");
+  // últimos 6 meses
+  const meses = []; const d = new Date(); d.setDate(1);
+  for (let i = 5; i >= 0; i--) { const x = new Date(d.getFullYear(), d.getMonth() - i, 1); meses.push(chaveMes(x)); }
+  const linhas = meses.map(k => ({ k,
+    cad: MEDICOS.filter(m => chaveMes(m.criado_em) === k).length,
+    novos: MEDICOS.filter(m => { const pr = aprov.filter(p => p.medico_id === m.id).map(p => Date.parse(p.pago_em)).sort((a, b) => a - b)[0];
+      const t = m.assinou_em ? Date.parse(m.assinou_em) : pr; return t && chaveMes(t) === k; }).length,
+    canc: MEDICOS.filter(m => m.mp_assinatura_status === "cancelled" && m.mp_status_em && chaveMes(m.mp_status_em) === k).length,
+    rec: aprov.filter(p => chaveMes(p.pago_em) === k).reduce((a, p) => a + Number(p.valor || 0), 0) }));
+  const max = Math.max(1, ...linhas.map(l => l.rec));
+  $("numBarras").innerHTML = linhas.map(l => `<div class="c ${l.k === mesAtual ? "atual" : ""}"><div class="v">${l.rec ? brl(l.rec) : ""}</div><div class="b" style="height:${l.rec / max * 100}%"></div></div>`).join("");
+  $("numRot").innerHTML = linhas.map(l => `<span>${nomeMes(l.k)}${l.k === mesAtual ? " (parcial)" : ""}</span>`).join("");
+  $("numTb").innerHTML = linhas.slice().reverse().map(l => `<tr><td>${nomeMes(l.k)}</td><td>${l.cad}</td><td>${l.novos}</td><td>${l.canc}</td><td>${brl(l.rec)}</td></tr>`).join("");
+}
+
+// ---------- EQUIPE ----------
+const ERROS_EQP = { ja_existe: "Esse e-mail já está na equipe.", senha_curta: "A senha provisória precisa ter pelo menos 10 caracteres.",
+  ultimo_admin: "Precisa existir pelo menos um administrador ativo.", nao_pode_se_desativar: "Você não pode desativar o próprio acesso.",
+  sem_permissao: "Sem permissão (confira se você é administrador).", email_invalido: "E-mail inválido." };
+async function eqp(corpo) {
+  const { data, error } = await sb.functions.invoke("admin-equipe", { body: corpo });
+  let erro = data?.erro; if (!erro && error) { try { erro = (await error.context.json()).erro; } catch (e) { erro = "falha"; } }
+  if (erro) { alert(ERROS_EQP[erro] || "Não foi possível concluir: " + erro); return false; }
+  return true;
+}
+const gerarSenha = () => { const c = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789"; const a = new Uint32Array(12); crypto.getRandomValues(a); return [...a].map(x => c[x % c.length]).join(""); };
+async function desenharEquipe() {
+  const { data } = await sb.from("admins").select("*").order("criado_em");
+  const eu = (await sb.auth.getUser()).data.user?.email?.toLowerCase();
+  $("eqpTb").innerHTML = (data || []).map(a => `<tr class="${a.ativo ? "" : "inativo"}">
+    <td><b>${esc(a.nome || "—")}</b>${a.email === eu ? ' <span class="sub">(você)</span>' : ""}</td><td>${esc(a.email)}</td>
+    <td><span class="papel ${a.papel}">${a.papel === "admin" ? "Administrador" : "Ajudante"}</span></td>
+    <td>${a.ativo ? "Ativo" : "Desativado"}</td><td>${fmtData(a.criado_em)}</td>
+    <td><div class="acoes">${a.email === eu ? "" : `
+      <button data-e="papel" data-email="${esc(a.email)}" data-papel="${a.papel}">${a.papel === "admin" ? "Tornar ajudante" : "Tornar administrador"}</button>
+      <button data-e="${a.ativo ? "desativar" : "ativar"}" data-email="${esc(a.email)}" class="${a.ativo ? "perigo" : ""}">${a.ativo ? "Desativar" : "Reativar"}</button>`}
+      <button data-e="2fa" data-email="${esc(a.email)}">Redefinir 2 etapas</button></div></td></tr>`).join("");
+  $("eqpTb").querySelectorAll("button[data-e]").forEach(b => b.onclick = async () => {
+    const email = b.dataset.email, e = b.dataset.e;
+    if (e === "papel") { const novo = b.dataset.papel === "admin" ? "ajudante" : "admin";
+      if (await dialogo("Mudar perfil", `<p>Mudar <b>${esc(email)}</b> para <b>${novo === "admin" ? "Administrador" : "Ajudante"}</b>?</p>`, "Mudar")) await eqp({ acao: "alterar", email, papel: novo }); }
+    if (e === "desativar" && await dialogo("Desativar acesso", `<p><b>${esc(email)}</b> perde o acesso ao painel na hora. O histórico das ações dele continua guardado.</p>`, "Desativar")) await eqp({ acao: "desativar", email });
+    if (e === "ativar") await eqp({ acao: "ativar", email });
+    if (e === "2fa" && await dialogo("Redefinir verificação em 2 etapas", `<p>Use quando <b>${esc(email)}</b> trocar ou perder o celular. No próximo login, ele cadastra o app autenticador de novo (novo QR code).</p>`, "Redefinir")) {
+      if (await eqp({ acao: "redefinir_2fa", email })) alert("Pronto. No próximo login aparece um novo QR code."); }
+    desenharEquipe();
+  });
+}
+$("eqpAdd").onclick = async () => {
+  const senha = gerarSenha();
+  if (!(await dialogo("Adicionar pessoa à equipe", `
+    <label>Nome</label><input id="nNome" placeholder="ex.: Dra. Fulana / Secretária">
+    <label>E-mail (será o login)</label><input id="nEmail" type="email">
+    <label>Perfil</label><select id="nPapel" style="width:100%;padding:8px;border:1px solid var(--ln);border-radius:8px"><option value="ajudante">Ajudante — lista de médicos e lembretes</option><option value="admin">Administrador — acesso total</option></select>
+    <label>Senha provisória (envie para a pessoa por um canal seguro)</label><input id="nSenha" value="${senha}" style="font-family:ui-monospace,monospace">
+    <p class="sub">No primeiro login a pessoa ativa a verificação em 2 etapas no celular dela. Peça para trocar a senha depois (Supabase → “Esqueci a senha”).</p>`, "Adicionar"))) return;
+  const ok = await eqp({ acao: "adicionar", nome: $("nNome").value.trim(), email: $("nEmail").value.trim(), papel: $("nPapel").value, senha: $("nSenha").value });
+  if (ok) { navigator.clipboard?.writeText(`Login: ${$("nEmail").value.trim()}\nSenha provisória: ${$("nSenha").value}`).catch(() => {}); alert("Pessoa adicionada. Login e senha provisória copiados para você enviar."); }
+  desenharEquipe();
+};
+
+// ---------- HISTÓRICO ----------
+let HIST = [];
+const ROTULO = { teste_fim: "fim do teste", pago_ate: "vencimento", bloqueio_manual: "bloqueado", bloqueio_motivo: "motivo", bloqueado_em: "bloqueado em",
+  cortesia_ate: "cortesia até", cortesia_sem_prazo: "cortesia sem prazo", limites: "limites", lembretes_feitos: "lembretes", observacoes: "observação",
+  nome: "nome", crm: "CRM", uf: "UF", email: "e-mail", celular: "celular", alerta: "alerta", mp_assinatura_status: "assinatura MP", valor_assinatura: "valor",
+  preco_mensal: "mensalidade", texto_assinar: "texto do botão", ocultar_assinar: "ocultar Assinar", cadastros_abertos: "cadastros abertos",
+  mensagem_cadastro: "mensagem de cadastro", manutencao: "manutenção", mensagem_manutencao: "mensagem de manutenção", seletores: "ajustes da tela", versao_minima: "versão mínima", tempo_minimo: "tempo mínimo (s)",
+  mp_status_em: "data da situação MP", assinou_em: "assinou em", mp_assinatura_id: "id da assinatura" };
+const NOMES_VALOR = { so_timer: "só timer", tudo: "pausar tudo", normal: "normal", authorized: "ativa", cancelled: "cancelada", pending: "pendente", paused: "pausada" };
+const fmtValor = v => v === null || v === undefined ? "—" : v === true ? "sim" : v === false ? "não" : typeof v === "string" && NOMES_VALOR[v] ? NOMES_VALOR[v]
+  : typeof v === "string" && /^\d{4}-\d{2}-\d{2}T/.test(v) ? new Date(v).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })
+  : typeof v === "object" ? "(alterado)" : String(v);
+function descrever(h) {
+  const d = h.depois || {}, a = h.antes || {}, k = Object.keys(d);
+  const mapa = { cadastro: "Médico se cadastrou (teste grátis)", login: "Entrou no painel", cancelou_assinatura_mp: "Cancelou assinatura no Mercado Pago",
+    reajustou_assinantes: "Reajustou assinantes atuais", equipe_adicionou: "Adicionou pessoa à equipe", equipe_alterou: "Mudou perfil na equipe",
+    equipe_desativou: "Desativou acesso", equipe_reativou: "Reativou acesso", equipe_redefiniu_2fa: "Redefiniu verificação em 2 etapas" };
+  if (mapa[h.acao]) return mapa[h.acao];
+  if (h.acao === "configuracao") {
+    if ("manutencao" in d) return "Modo manutenção: " + ({ normal: "normal", so_timer: "só timer", tudo: "pausar tudo" }[d.manutencao] || d.manutencao);
+    if ("preco_mensal" in d) return "Mudou a mensalidade";
+    if ("cadastros_abertos" in d) return d.cadastros_abertos ? "Abriu os cadastros" : "Fechou os cadastros";
+    if ("limites" in d) return "Alterou limites (todos)"; if ("seletores" in d) return "Alterou ajustes da tela";
+    if ("tempo_minimo" in d) return "Mudou o tempo mínimo do atendimento";
+    if ("versao_minima" in d) return "Mudou a versão mínima"; if ("texto_assinar" in d || "ocultar_assinar" in d) return "Alterou o botão Assinar";
+    return "Alterou configurações";
+  }
+  if ("bloqueio_manual" in d) return d.bloqueio_manual ? "Bloqueou" : "Desbloqueou";
+  if ("cortesia_sem_prazo" in d || "cortesia_ate" in d) return (d.cortesia_sem_prazo || (d.cortesia_ate && Date.parse(d.cortesia_ate) > Date.parse(h.quando))) ? "Deu cortesia" : "Encerrou cortesia";
+  if (h.quem === "sistema" && "pago_ate" in d) return "Pagamento confirmado";
+  if (h.quem === "sistema" && "alerta" in d) return "Alerta: pagamento com acesso bloqueado";
+  if (h.quem === "sistema" && "mp_assinatura_status" in d) return "Assinatura MP: " + d.mp_assinatura_status;
+  if ("pago_ate" in d || "teste_fim" in d) return "Alterou vencimento / dias extras";
+  if ("limites" in d) return "Alterou limites do médico";
+  if ("alerta" in d && !d.alerta) return "Resolveu alerta";
+  if (k.length === 1 && k[0] === "lembretes_feitos") return "Marcou lembrete como feito";
+  if (k.length === 1 && k[0] === "observacoes") return "Editou observação";
+  return "Editou cadastro";
+}
+function detalhe(h) {
+  if (h.acao === "login") return esc((h.alvo || "").replace(/\(.*?\)/g, "").slice(0, 80));
+  const d = h.depois || {}, a = h.antes || {};
+  if (["cadastro", "reajustou_assinantes", "equipe_adicionou", "cancelou_assinatura_mp"].includes(h.acao))
+    return esc(Object.entries(d).filter(([, v]) => typeof v !== "object" || v === null).map(([k, v]) => `${ROTULO[k] || k}: ${fmtValor(v)}`).join(" · "));
+  return Object.keys(d).filter(k => k !== "lembretes_feitos").map(k => `${esc(ROTULO[k] || k)}: ${esc(fmtValor(a[k]))} → <b>${esc(fmtValor(d[k]))}</b>`).join("<br>")
+    || (("lembretes_feitos" in d) ? "lembrete marcado como feito" : "");
+}
+const tipoHist = h => h.acao === "login" ? "login" : h.acao === "configuracao" || h.acao === "reajustou_assinantes" ? "cfg" : h.acao.startsWith("equipe_") ? "eqp" : h.quem === "sistema" ? "sis" : "med";
+async function desenharHistorico() {
+  const desde = new Date(Date.now() - (+$("hisDias").value) * DIA).toISOString();
+  const { data, error } = await sb.from("auditoria").select("*").gte("quando", desde).order("quando", { ascending: false }).limit(2000);
+  if (error) { $("hisTb").innerHTML = `<tr><td colspan="5" class="vazio">Erro ao carregar o histórico.</td></tr>`; return; }
+  HIST = data || []; filtrarHistorico();
+}
+function filtrarHistorico() {
+  const q = semAcento($("hisBusca").value), t = $("hisTipo").value;
+  const l = HIST.filter(h => (!t || tipoHist(h) === t) && (!q || semAcento(h.quem + " " + (h.alvo || "")).includes(q)));
+  $("hisTb").innerHTML = l.map(h => `<tr><td style="white-space:nowrap">${new Date(h.quando).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })}</td>
+    <td>${esc(h.quem)}</td><td><b>${esc(descrever(h))}</b></td><td>${esc(h.acao === "login" ? "—" : h.alvo || "—")}</td><td class="det">${detalhe(h)}</td></tr>`).join("")
+    || `<tr><td colspan="5" class="vazio">Nada no período.</td></tr>`;
+  $("hisRod").textContent = `${l.length} registro(s)`;
+}
+$("hisBusca").oninput = filtrarHistorico; $("hisTipo").onchange = filtrarHistorico; $("hisDias").onchange = desenharHistorico;
+$("hisCsv").onclick = () => {
+  const q = semAcento($("hisBusca").value), t = $("hisTipo").value;
+  const l = HIST.filter(h => (!t || tipoHist(h) === t) && (!q || semAcento(h.quem + " " + (h.alvo || "")).includes(q)));
+  const txt = s => String(s ?? "").replace(/<[^>]+>/g, "").replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/[;\r\n]/g, " ");
+  const linhas = ["Quando;Quem;Ação;Médico/alvo;Detalhe", ...l.map(h => [new Date(h.quando).toLocaleString("pt-BR"), h.quem, descrever(h), h.acao === "login" ? "" : h.alvo, detalhe(h).replace(/<br>/g, " | ")].map(txt).join(";"))];
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["\ufeff" + linhas.join("\r\n")], { type: "text/csv;charset=utf-8" }));
+  a.download = `historico-${new Date().toISOString().slice(0, 10)}.csv`; a.click();
+};
+
+// ---------- exportar ----------
+$("exportar").onclick = () => {
+  const cab = ["Nome", "Nome na plataforma", "CRM", "UF", "CPF", "E-mail", "Celular", "Situação", "Cortesia", "Vencimento", "Último pagamento", "Valor", "Último uso", "Versão", "Cadastro", "Motivo do bloqueio", "Alerta"];
+  const lin = filtrados().map((m) => { const s = situacao(m), up = ultimoPag(m.id);
+    return [m.nome, m.nome_plataforma, m.crm, m.uf, m.cpf_mascara, m.email, fone(m.celular), s.txt, m.cortesia_sem_prazo ? "sem prazo" : m.cortesia_ate ? "até " + fmtData(m.cortesia_ate) : "", fmtData(s.vence), up ? fmtData(up.pago_em) : "", up ? up.valor : "", fmtDH(m.ultimo_uso), m.versao_extensao, fmtData(m.criado_em), m.bloqueio_motivo, m.alerta]
+      .map((v) => String(v ?? "").replace(/[;\r\n]/g, " ")).join(";"); });
+  const blob = new Blob(["﻿" + [cab.join(";"), ...lin].join("\r\n")], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `assinantes-${new Date().toISOString().slice(0, 10)}.csv`; a.click();
+};
+$("busca").oninput = desenhar;
+$("recarregar").onclick = carregar;
+setInterval(() => { if (!$("app").hidden) carregar(); }, 60000);
+iniciar();
+</script>
+</body>
+</html>
