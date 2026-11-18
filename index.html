@@ -572,7 +572,7 @@ async function acao(a, id) {
 const FABRICA = { auto_permitido: true, fila_vazia_permitido: true, fila_vazia_consulta: 1, fila_vazia_espera: 0,
   consulta_fila: { min: 1, max: 10, padrao: 2 }, espera_inicio: { min: 0, max: 60, padrao: 5 },
   recarregar_permitido: true, recarregar: { min: 2, max: 120, padrao: 5 }, voz_permitida: true,
-  clique_forcado_permitido: true, segundo_plano_permitido: true, voltar_fila_permitido: true, voltar_fila: { min: 30, max: 600, padrao: 60 } };
+  clique_forcado_permitido: true, diagnostico: false, segundo_plano_permitido: true, voltar_fila_permitido: true, voltar_fila: { min: 30, max: 600, padrao: 60 } };
 const TRAVA = { consulta_fila: [0.5, 300], espera_inicio: [0, 600], recarregar: [2, 600], fila_vazia_consulta: [0.5, 300], fila_vazia_espera: [0, 600], voltar_fila: [15, 3600] };
 const nLim = (v, a, b, d) => { const n = Number(v); return Number.isFinite(n) && v !== "" && v !== null ? Math.min(b, Math.max(a, Math.round(n * 10) / 10)) : d; };
 const fx = (v, base, [a, b]) => { const min = nLim(v?.min, a, b, base.min), max = Math.max(min, nLim(v?.max, a, b, base.max));
@@ -588,6 +588,7 @@ function aplicarLim(base, o) {
     recarregar_permitido: bo(o.recarregar_permitido, base.recarregar_permitido),
     recarregar: fx(o.recarregar ?? base.recarregar, base.recarregar, TRAVA.recarregar), voz_permitida: bo(o.voz_permitida, base.voz_permitida),
     clique_forcado_permitido: bo(o.clique_forcado_permitido, base.clique_forcado_permitido),
+    diagnostico: bo(o.diagnostico, base.diagnostico),
     segundo_plano_permitido: bo(o.segundo_plano_permitido, base.segundo_plano_permitido),
     voltar_fila_permitido: bo(o.voltar_fila_permitido, base.voltar_fila_permitido),
     voltar_fila: fx(o.voltar_fila ?? base.voltar_fila, base.voltar_fila, TRAVA.voltar_fila) };
@@ -614,6 +615,8 @@ function formLimites(L, px) {
     <div class="bloco">${ch("voz_permitida", "Aviso por voz liberado")}<p class="sub">"Paciente captado" e "Vídeo aberto".</p></div>
     <div class="bloco">${ch("clique_forcado_permitido", "Clique antecipado")}
       <p class="sub">Clica assim que a extensão vê paciente na fila, sem esperar a tela da plataforma liberar o botão. Até 5 tentativas por paciente. Só o administrador controla (o médico não vê esta opção). Desligado: a extensão usa só a recarga da página.</p></div>
+    <div class="bloco">${ch("diagnostico", "Modo diagnóstico")}
+      <p class="sub">Mostra as mensagens da extensão no F12 (Console), com o prefixo [diag], para investigar problemas. Deixe desligado no dia a dia; para um médico só, use o botão Limites dele.</p></div>
     <div class="bloco">${ch("segundo_plano_permitido", "Captar com a aba escondida")}
       <p class="sub">Com a aba em segundo plano ou minimizada, consulta a fila no mesmo ritmo e traz a aba para a frente quando aparece paciente.</p></div>
     <div class="bloco">${ch("voltar_fila_permitido", "Voltar sozinho para a fila")}
@@ -629,7 +632,7 @@ function lerLimites(px) {
     fila_vazia_consulta: v("fila_vazia_consulta"), fila_vazia_espera: v("fila_vazia_espera"),
     consulta_fila: fxr("consulta_fila"), espera_inicio: fxr("espera_inicio"), recarregar_permitido: c("recarregar_permitido"),
     recarregar: fxr("recarregar"), voz_permitida: c("voz_permitida"),
-    clique_forcado_permitido: c("clique_forcado_permitido"), segundo_plano_permitido: c("segundo_plano_permitido"), voltar_fila_permitido: c("voltar_fila_permitido"), voltar_fila: fxr("voltar_fila") });
+    clique_forcado_permitido: c("clique_forcado_permitido"), diagnostico: c("diagnostico"), segundo_plano_permitido: c("segundo_plano_permitido"), voltar_fila_permitido: c("voltar_fila_permitido"), voltar_fila: fxr("voltar_fila") });
 }
 const resumoLim = (L) => [!L.auto_permitido ? "sem automático" : !L.fila_vazia_permitido ? "sem fila vazia" : null,
   L.auto_permitido ? `fila ${L.consulta_fila.min}–${L.consulta_fila.max}s` : null].filter(Boolean).join(" · ");
